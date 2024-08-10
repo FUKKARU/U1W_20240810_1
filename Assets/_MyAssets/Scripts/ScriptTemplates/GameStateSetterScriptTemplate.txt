@@ -1,0 +1,25 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace XXXXX
+{
+    public class GameStateSetter
+    {
+        [RuntimeInitializeOnLoadMethod]
+        static void RuntimeInitializeOnLoadMethods()
+        {
+            Screen.SetResolution(1920, 1080, true);
+
+            if (true)
+            {
+                QualitySettings.vSyncCount = 1;
+            }
+            else
+            {
+                QualitySettings.vSyncCount = 0;
+                Application.targetFrameRate = 60;
+            }
+        }
+    }
+}

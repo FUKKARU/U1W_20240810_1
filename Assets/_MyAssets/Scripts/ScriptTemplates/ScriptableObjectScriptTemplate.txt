@@ -1,0 +1,31 @@
+using UnityEngine;
+
+namespace SO
+{
+    [CreateAssetMenu(menuName = "SO/#SCRIPTNAME#", fileName = "#SCRIPTNAME#")]
+    public class #SCRIPTNAME# : ScriptableObject
+    {
+        #region
+        public const string PATH = "#SCRIPTNAME#";
+
+        private static #SCRIPTNAME# _entity = null;
+        public static #SCRIPTNAME# Entity
+        {
+            get
+            {
+                if (_entity == null)
+                {
+                    _entity = Resources.Load<#SCRIPTNAME#>(PATH);
+
+                    if (_entity == null)
+                    {
+                        Debug.LogError(PATH + " not found");
+                    }
+                }
+
+                return _entity;
+            }
+        }
+        #endregion
+    }
+}
