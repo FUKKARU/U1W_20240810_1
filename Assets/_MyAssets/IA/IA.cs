@@ -30,7 +30,7 @@ namespace IA
             ""id"": ""7d3322de-7b19-4c54-af3d-b6c802e81f0e"",
             ""actions"": [
                 {
-                    ""name"": ""Click"",
+                    ""name"": ""Charge"",
                     ""type"": ""Button"",
                     ""id"": ""44ae81c5-a6b6-41df-9b20-dda074acd7d2"",
                     ""expectedControlType"": ""Button"",
@@ -48,7 +48,7 @@ namespace IA
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Value"",
+                    ""name"": ""Move"",
                     ""type"": ""Value"",
                     ""id"": ""59db8909-9ec2-4977-96ab-108b00b7b6f4"",
                     ""expectedControlType"": ""Vector2"",
@@ -61,11 +61,11 @@ namespace IA
                 {
                     ""name"": """",
                     ""id"": ""5200b73f-42cb-4083-ada3-29244e1037bd"",
-                    ""path"": ""<Mouse>/leftButton"",
+                    ""path"": ""<Keyboard>/leftShift"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Click"",
+                    ""action"": ""Charge"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -87,7 +87,7 @@ namespace IA
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Value"",
+                    ""action"": ""Move"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
@@ -98,7 +98,7 @@ namespace IA
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Value"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -109,7 +109,7 @@ namespace IA
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Value"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -120,7 +120,7 @@ namespace IA
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Value"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -131,7 +131,7 @@ namespace IA
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Value"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 }
@@ -142,9 +142,9 @@ namespace IA
 }");
             // Main
             m_Main = asset.FindActionMap("Main", throwIfNotFound: true);
-            m_Main_Click = m_Main.FindAction("Click", throwIfNotFound: true);
+            m_Main_Charge = m_Main.FindAction("Charge", throwIfNotFound: true);
             m_Main_Hold = m_Main.FindAction("Hold", throwIfNotFound: true);
-            m_Main_Value = m_Main.FindAction("Value", throwIfNotFound: true);
+            m_Main_Move = m_Main.FindAction("Move", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -206,16 +206,16 @@ namespace IA
         // Main
         private readonly InputActionMap m_Main;
         private List<IMainActions> m_MainActionsCallbackInterfaces = new List<IMainActions>();
-        private readonly InputAction m_Main_Click;
+        private readonly InputAction m_Main_Charge;
         private readonly InputAction m_Main_Hold;
-        private readonly InputAction m_Main_Value;
+        private readonly InputAction m_Main_Move;
         public struct MainActions
         {
             private @IA m_Wrapper;
             public MainActions(@IA wrapper) { m_Wrapper = wrapper; }
-            public InputAction @Click => m_Wrapper.m_Main_Click;
+            public InputAction @Charge => m_Wrapper.m_Main_Charge;
             public InputAction @Hold => m_Wrapper.m_Main_Hold;
-            public InputAction @Value => m_Wrapper.m_Main_Value;
+            public InputAction @Move => m_Wrapper.m_Main_Move;
             public InputActionMap Get() { return m_Wrapper.m_Main; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -225,28 +225,28 @@ namespace IA
             {
                 if (instance == null || m_Wrapper.m_MainActionsCallbackInterfaces.Contains(instance)) return;
                 m_Wrapper.m_MainActionsCallbackInterfaces.Add(instance);
-                @Click.started += instance.OnClick;
-                @Click.performed += instance.OnClick;
-                @Click.canceled += instance.OnClick;
+                @Charge.started += instance.OnCharge;
+                @Charge.performed += instance.OnCharge;
+                @Charge.canceled += instance.OnCharge;
                 @Hold.started += instance.OnHold;
                 @Hold.performed += instance.OnHold;
                 @Hold.canceled += instance.OnHold;
-                @Value.started += instance.OnValue;
-                @Value.performed += instance.OnValue;
-                @Value.canceled += instance.OnValue;
+                @Move.started += instance.OnMove;
+                @Move.performed += instance.OnMove;
+                @Move.canceled += instance.OnMove;
             }
 
             private void UnregisterCallbacks(IMainActions instance)
             {
-                @Click.started -= instance.OnClick;
-                @Click.performed -= instance.OnClick;
-                @Click.canceled -= instance.OnClick;
+                @Charge.started -= instance.OnCharge;
+                @Charge.performed -= instance.OnCharge;
+                @Charge.canceled -= instance.OnCharge;
                 @Hold.started -= instance.OnHold;
                 @Hold.performed -= instance.OnHold;
                 @Hold.canceled -= instance.OnHold;
-                @Value.started -= instance.OnValue;
-                @Value.performed -= instance.OnValue;
-                @Value.canceled -= instance.OnValue;
+                @Move.started -= instance.OnMove;
+                @Move.performed -= instance.OnMove;
+                @Move.canceled -= instance.OnMove;
             }
 
             public void RemoveCallbacks(IMainActions instance)
@@ -266,9 +266,9 @@ namespace IA
         public MainActions @Main => new MainActions(this);
         public interface IMainActions
         {
-            void OnClick(InputAction.CallbackContext context);
+            void OnCharge(InputAction.CallbackContext context);
             void OnHold(InputAction.CallbackContext context);
-            void OnValue(InputAction.CallbackContext context);
+            void OnMove(InputAction.CallbackContext context);
         }
     }
 }

@@ -11,6 +11,8 @@ namespace IA
         Null,
         Click,
         Hold,
+        Value0,
+        Value1,
         Value2,
         Value3
     }
@@ -24,32 +26,43 @@ namespace IA
 
             action = this.type switch
             {
-                InputType.Null => null,
-                InputType.Click => ((InputAction.CallbackContext context) => { val1 = true; }),
-                InputType.Hold => ((InputAction.CallbackContext context) => { val1 = true; }),
-                InputType.Value2 => ((InputAction.CallbackContext context) => { val2 = context.ReadValue<Vector2>(); }),
-                InputType.Value3 => ((InputAction.CallbackContext context) => { val3 = context.ReadValue<Vector3>(); }),
+                InputType.Null
+                => null,
+                InputType.Click
+                => new() { (InputAction.CallbackContext context) => { val0 = true; } },
+                InputType.Hold
+                => new() { (InputAction.CallbackContext context) => { val0 = true; } },
+                InputType.Value0
+                => new() { (InputAction.CallbackContext context) => { val0 = true; },
+                    (InputAction.CallbackContext context) => { val0 = false; } },
+                InputType.Value1
+                => new() { (InputAction.CallbackContext context) => { val1 = context.ReadValue<float>(); } },
+                InputType.Value2
+                => new() { (InputAction.CallbackContext context) => { val2 = context.ReadValue<Vector2>(); } },
+                InputType.Value3
+                => new() { (InputAction.CallbackContext context) => { val3 = context.ReadValue<Vector3>(); } },
                 _ => null
             };
         }
 
-        private InputAction inputAction = null;
-        private InputType type = InputType.Null;
-        private System.Action<InputAction.CallbackContext> action = null;
+        private readonly InputAction inputAction = null;
+        private readonly InputType type = InputType.Null;
+        private readonly List<System.Action<InputAction.CallbackContext>> action = null;
 
-        private bool val1 = false;
+        private bool val0 = false;
+        private float val1 = 0;
         private Vector2 val2 = Vector2.zero;
         private Vector3 val3 = Vector3.zero;
 
         public T Get<T>()
         {
-            object ret = null;
-
-            ret = type switch
+            object ret = type switch
             {
                 InputType.Null => null,
-                InputType.Click => val1,
-                InputType.Hold => val1,
+                InputType.Click => val0,
+                InputType.Hold => val0,
+                InputType.Value0 => val0,
+                InputType.Value1 => val1,
                 InputType.Value2 => val2,
                 InputType.Value3 => val3,
                 _ => null
@@ -68,23 +81,34 @@ namespace IA
                         break;
 
                     case InputType.Click:
-                        inputAction.performed += action;
+                        inputAction.performed += action[0];
                         break;
 
                     case InputType.Hold:
-                        inputAction.performed += action;
+                        inputAction.performed += action[0];
+                        break;
+
+                    case InputType.Value0:
+                        inputAction.performed += action[0];
+                        inputAction.canceled += action[1];
+                        break;
+
+                    case InputType.Value1:
+                        inputAction.started += action[0];
+                        inputAction.performed += action[0];
+                        inputAction.canceled += action[0];
                         break;
 
                     case InputType.Value2:
-                        inputAction.started += action;
-                        inputAction.performed += action;
-                        inputAction.canceled += action;
+                        inputAction.started += action[0];
+                        inputAction.performed += action[0];
+                        inputAction.canceled += action[0];
                         break;
 
                     case InputType.Value3:
-                        inputAction.started += action;
-                        inputAction.performed += action;
-                        inputAction.canceled += action;
+                        inputAction.started += action[0];
+                        inputAction.performed += action[0];
+                        inputAction.canceled += action[0];
                         break;
 
                     default:
@@ -99,23 +123,34 @@ namespace IA
                         break;
 
                     case InputType.Click:
-                        inputAction.performed -= action;
+                        inputAction.performed -= action[0];
                         break;
 
                     case InputType.Hold:
-                        inputAction.performed -= action;
+                        inputAction.performed -= action[0];
+                        break;
+
+                    case InputType.Value0:
+                        inputAction.performed -= action[0];
+                        inputAction.canceled -= action[1];
+                        break;
+
+                    case InputType.Value1:
+                        inputAction.started -= action[0];
+                        inputAction.performed -= action[0];
+                        inputAction.canceled -= action[0];
                         break;
 
                     case InputType.Value2:
-                        inputAction.started -= action;
-                        inputAction.performed -= action;
-                        inputAction.canceled -= action;
+                        inputAction.started -= action[0];
+                        inputAction.performed -= action[0];
+                        inputAction.canceled -= action[0];
                         break;
 
                     case InputType.Value3:
-                        inputAction.started -= action;
-                        inputAction.performed -= action;
-                        inputAction.canceled -= action;
+                        inputAction.started -= action[0];
+                        inputAction.performed -= action[0];
+                        inputAction.canceled -= action[0];
                         break;
 
                     default:
@@ -126,8 +161,8 @@ namespace IA
 
         public void OnLateUpdate()
         {
-            if (type == InputType.Click && val1) val1 = false;
-            if (type == InputType.Hold && val1) val1 = false;
+            if (type == InputType.Click && val0) val0 = false;
+            if (type == InputType.Hold && val0) val0 = false;
         }
     }
 
@@ -208,15 +243,13 @@ namespace IA
 
         #endregion
 
-        public InputInfo Main_Click { get; private set; } = null;
-        public InputInfo Main_Hold { get; private set; } = null;
-        public InputInfo Main_Value2 { get; private set; } = null;
+        public InputInfo Main_ChargeValue0 { get; private set; } = null;
+        public InputInfo Main_MoveValue2 { get; private set; } = null;
 
         private void Init()
         {
-            Main_Click = new InputInfo(_inputs.Main.Click, InputType.Click).Add(inputInfoList);
-            Main_Hold = new InputInfo(_inputs.Main.Hold, InputType.Hold).Add(inputInfoList);
-            Main_Value2 = new InputInfo(_inputs.Main.Value, InputType.Value2).Add(inputInfoList);
+            Main_ChargeValue0 = new InputInfo(_inputs.Main.Charge, InputType.Value0).Add(inputInfoList);
+            Main_MoveValue2 = new InputInfo(_inputs.Main.Move, InputType.Value2).Add(inputInfoList);
         }
     }
 }

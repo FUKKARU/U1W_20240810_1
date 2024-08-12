@@ -6,7 +6,7 @@
             "id": "7d3322de-7b19-4c54-af3d-b6c802e81f0e",
             "actions": [
                 {
-                    "name": "Click",
+                    "name": "Charge",
                     "type": "Button",
                     "id": "44ae81c5-a6b6-41df-9b20-dda074acd7d2",
                     "expectedControlType": "Button",
@@ -24,7 +24,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Value",
+                    "name": "Move",
                     "type": "Value",
                     "id": "59db8909-9ec2-4977-96ab-108b00b7b6f4",
                     "expectedControlType": "Vector2",
@@ -37,11 +37,11 @@
                 {
                     "name": "",
                     "id": "5200b73f-42cb-4083-ada3-29244e1037bd",
-                    "path": "<Mouse>/leftButton",
+                    "path": "<Keyboard>/leftShift",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Click",
+                    "action": "Charge",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -63,7 +63,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Value",
+                    "action": "Move",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -74,7 +74,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Value",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -85,7 +85,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Value",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -96,7 +96,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Value",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -107,7 +107,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Value",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 }
