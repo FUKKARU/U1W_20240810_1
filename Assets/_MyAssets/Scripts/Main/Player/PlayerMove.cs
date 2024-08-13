@@ -101,8 +101,10 @@ namespace Main.Player
             // 変身
             TransformBhv();
 
+            // 慣性を消す
+            ResetInertiaXZBhv();
+
             // 回転・移動
-            GetFigure(figureIndex).FigureRb.velocity = Vector3.zero;  // 慣性を消す
             TurnBhv();
             MoveBhv();
 
@@ -142,9 +144,9 @@ namespace Main.Player
             GetFigure(newI).Figure.SetActive(true);
             freeLookCamera.Follow = GetFigure(newI).FigureTf;
             freeLookCamera.LookAt = GetFigure(newI).HeadTf;
-            freeLookCamera.GetRig(0).m_LookAt = GetFigure(newI).AboveHeadTf;
+            freeLookCamera.GetRig(0).m_LookAt = GetFigure(newI).FootTf;
             freeLookCamera.GetRig(1).m_LookAt = GetFigure(newI).HeadTf;
-            freeLookCamera.GetRig(2).m_LookAt = GetFigure(newI).FootTf;
+            freeLookCamera.GetRig(2).m_LookAt = GetFigure(newI).AboveHeadTf;
         }
 
         // 突進状態を切り替える。trueなら突進状態にし、falseなら突進状態でなくする。
@@ -184,6 +186,14 @@ namespace Main.Player
             action();
         }
 
+        // 慣性を消す(Rigidbodyの速度の、xとzを0にする)
+        private void ResetInertiaXZBhv()
+        {
+            Vector3 vel = GetFigure(figureIndex).FigureRb.velocity;
+            vel.x = 0; vel.z = 0;
+            GetFigure(figureIndex).FigureRb.velocity = vel;
+        }
+
         // プレイヤーをカメラの方向に回転させる
         private void TurnBhv()
         {
@@ -209,7 +219,7 @@ namespace Main.Player
             Vector3 moveValueLocalNormed = new Vector3(moveValueInputted.x, 0, moveValueInputted.y).normalized;
             Vector3 moveValueLocal = moveValueLocalNormed * (moveSpeed * Time.deltaTime);
             Vector3 moveValue = fgr.FigureTf.right * moveValueLocal.x + fgr.FigureTf.forward * moveValueLocal.z;
-            fgr.FigureTf.localPosition += moveValue;
+            fgr.FigureTf.position += moveValue;
 
             // 他の形態を現在の形態にコンストレイン
             Vector3 toPos = GetFigure(figureIndex).FigureTf.position;
