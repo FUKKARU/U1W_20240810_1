@@ -51,6 +51,12 @@ namespace Main.Player
 
     internal sealed class PlayerMoveBhv : System.IDisposable
     {
+        private enum FigureIndex
+        {
+            Fox = 1,
+            Human = 2
+        }
+
         private readonly PlayerFigure figure1;
         private readonly PlayerFigure figure2;
         private Cinemachine.CinemachineFreeLook freeLookCamera;
@@ -58,7 +64,7 @@ namespace Main.Player
 
         private readonly PlayerStamina playerStamina;
 
-        private int figureIndex = 1;  // 形態のインデックス番号
+        private FigureIndex figureIndex = FigureIndex.Fox;  // 形態のインデックス番号
         private float moveSpeed = SO_Player.Entity.NormalSpeed;  // 移動スピード
         private float staminaT = 0;  // スタミナ増減の時間カウンタ
         private bool isStaminaIncreasable = true;  // スタミナが回復可能かどうか
@@ -74,7 +80,7 @@ namespace Main.Player
 
             playerStamina = new();
 
-            ChangeFigure(2, 1);
+            ChangeFigure(FigureIndex.Human, FigureIndex.Fox);
         }
 
         public void Dispose()
@@ -92,25 +98,131 @@ namespace Main.Player
             if (!freeLookCamera) return;
             if (!freeLookCameraTf) return;
 
-            // 変身する
-            if (InputGetter.Instance.Main_TransformClick.Get<bool>())
-            {
-                System.Action action = figureIndex switch
-                {
-                    1 => () => ChangeFigure(1, 2),
-                    2 => () => ChangeFigure(2, 1),
-                    _ => throw new System.Exception("無効なインデックス番号です")
-                };
-
-                action();
-            }
-
-            // 慣性を消す
-            GetFigure(figureIndex).FigureRb.velocity = Vector3.zero;
+            // 変身
+            TransformBhv();
 
             // 回転・移動
-            Turn(figureIndex);
-            Move(figureIndex);
+            GetFigure(figureIndex).FigureRb.velocity = Vector3.zero;  // 慣性を消す
+            TurnBhv();
+            MoveBhv();
+
+            // 特殊行動
+            ChargeBhv();
+            GetItemBhv();
+            TradeBhv();
+        }
+
+        // 引数以外のインデックスをすべて取得
+        private List<FigureIndex> GetOtherFigureIndices(FigureIndex i)
+        {
+            return i switch
+            {
+                FigureIndex.Fox => new() { FigureIndex.Human },
+                FigureIndex.Human => new() { FigureIndex.Fox },
+                _ => throw new System.Exception("無効なインデックス番号です")
+            };
+        }
+
+        // 引数のインデックスに対応するPlayerFigureを取得
+        private PlayerFigure GetFigure(FigureIndex i)
+        {
+            return i switch
+            {
+                FigureIndex.Fox => figure1,
+                FigureIndex.Human => figure2,
+                _ => throw new System.Exception("無効なインデックス番号です")
+            };
+        }
+
+        // oldIからnewIに形態変化
+        private void ChangeFigure(FigureIndex oldI, FigureIndex newI)
+        {
+            figureIndex = newI;
+            GetFigure(oldI).Figure.SetActive(false);
+            GetFigure(newI).Figure.SetActive(true);
+            freeLookCamera.Follow = GetFigure(newI).FigureTf;
+            freeLookCamera.LookAt = GetFigure(newI).HeadTf;
+            freeLookCamera.GetRig(0).m_LookAt = GetFigure(newI).AboveHeadTf;
+            freeLookCamera.GetRig(1).m_LookAt = GetFigure(newI).HeadTf;
+            freeLookCamera.GetRig(2).m_LookAt = GetFigure(newI).FootTf;
+        }
+
+        // 突進状態を切り替える。trueなら突進状態にし、falseなら突進状態でなくする。
+        private void SetCharge(bool isCharge)
+        {
+            if (isCharge)
+            {
+                if (isCharging) return;
+                if (playerStamina.IsStaminaZero()) return;
+
+                isCharging = true;
+                moveSpeed = SO_Player.Entity.ChargeSpeed;
+                staminaT = 0;
+            }
+            else
+            {
+                if (!isCharging) return;
+
+                isCharging = false;
+                moveSpeed = SO_Player.Entity.NormalSpeed;
+                staminaT = 0;
+            }
+        }
+
+        // 変身する
+        private void TransformBhv()
+        {
+            if (!InputGetter.Instance.Main_TransformClick.Get<bool>()) return;
+
+            System.Action action = figureIndex switch
+            {
+                FigureIndex.Fox => () => ChangeFigure(FigureIndex.Fox, FigureIndex.Human),
+                FigureIndex.Human => () => ChangeFigure(FigureIndex.Human, FigureIndex.Fox),
+                _ => throw new System.Exception("無効なインデックス番号です")
+            };
+
+            action();
+        }
+
+        // プレイヤーをカメラの方向に回転させる
+        private void TurnBhv()
+        {
+            PlayerFigure fgr = GetFigure(figureIndex);
+            Vector3 lookAtLocal = fgr.FigureTf.position - freeLookCameraTf.position;
+            Vector3 lookAtLocalXZ = new(lookAtLocal.x, 0, lookAtLocal.z);
+            Vector3 lookAtXZ = fgr.FigureTf.position + lookAtLocalXZ;
+            fgr.FigureTf.LookAt(lookAtXZ);
+
+            // 他の形態を現在の形態にコンストレイン
+            Quaternion toQua = GetFigure(figureIndex).FigureTf.rotation;
+            foreach (FigureIndex e in GetOtherFigureIndices(figureIndex))
+            {
+                GetFigure(e).FigureTf.rotation = toQua;
+            }
+        }
+
+        // プレイヤーを前後左右に動かす
+        private void MoveBhv()
+        {
+            PlayerFigure fgr = GetFigure(figureIndex);
+            Vector2 moveValueInputted = InputGetter.Instance.Main_MoveValue2.Get<Vector2>();
+            Vector3 moveValueLocalNormed = new Vector3(moveValueInputted.x, 0, moveValueInputted.y).normalized;
+            Vector3 moveValueLocal = moveValueLocalNormed * (moveSpeed * Time.deltaTime);
+            Vector3 moveValue = fgr.FigureTf.right * moveValueLocal.x + fgr.FigureTf.forward * moveValueLocal.z;
+            fgr.FigureTf.localPosition += moveValue;
+
+            // 他の形態を現在の形態にコンストレイン
+            Vector3 toPos = GetFigure(figureIndex).FigureTf.position;
+            foreach (FigureIndex e in GetOtherFigureIndices(figureIndex))
+            {
+                GetFigure(e).FigureTf.position = toPos;
+            }
+        }
+
+        // 突進
+        private void ChargeBhv()
+        {
+            if (figureIndex != FigureIndex.Fox) return;
 
             // 突進キーの入力状態によって、もし可能ならば、突進状態を更新する。
             // 特に、突進キーが離されたとき、スタミナの回復を可能にする。([A]に対応する処理)
@@ -137,101 +249,16 @@ namespace Main.Player
             }
         }
 
-        private List<int> GetOtherFigureIndices(int i)
+        // アイテム取得
+        private void GetItemBhv()
         {
-            return i switch
-            {
-                1 => new() { 2 },
-                2 => new() { 1 },
-                _ => throw new System.Exception("無効なインデックス番号です")
-            };
+            if (figureIndex != FigureIndex.Fox) return;
         }
 
-        private PlayerFigure GetFigure(int i)
+        // 交易
+        private void TradeBhv()
         {
-            return i switch
-            {
-                1 => figure1,
-                2 => figure2,
-                _ => throw new System.Exception("無効なインデックス番号です")
-            };
-        }
-
-        private void ChangeFigure(int oldI, int newI)
-        {
-            figureIndex = newI;
-            GetFigure(oldI).Figure.SetActive(false);
-            GetFigure(newI).Figure.SetActive(true);
-            freeLookCamera.Follow = GetFigure(newI).FigureTf;
-            freeLookCamera.LookAt = GetFigure(newI).HeadTf;
-            freeLookCamera.GetRig(0).m_LookAt = GetFigure(newI).AboveHeadTf;
-            freeLookCamera.GetRig(1).m_LookAt = GetFigure(newI).HeadTf;
-            freeLookCamera.GetRig(2).m_LookAt = GetFigure(newI).FootTf;
-        }
-
-        // プレイヤーをカメラの方向に回転させる
-        private void Turn(int i)
-        {
-            PlayerFigure fgr = GetFigure(i);
-            Vector3 lookAtLocal = fgr.FigureTf.position - freeLookCameraTf.position;
-            Vector3 lookAtLocalXZ = new(lookAtLocal.x, 0, lookAtLocal.z);
-            Vector3 lookAtXZ = fgr.FigureTf.position + lookAtLocalXZ;
-            fgr.FigureTf.LookAt(lookAtXZ);
-            TurnConstrain(GetOtherFigureIndices(i), i);
-        }
-
-        private void TurnConstrain(List<int> fromIList, int toI)
-        {
-            Quaternion toQua = GetFigure(toI).FigureTf.rotation;
-
-            foreach (int e in fromIList)
-            {
-                GetFigure(e).FigureTf.rotation = toQua;
-            }
-        }
-
-        // プレイヤーを前後左右に動かす
-        private void Move(int i)
-        {
-            PlayerFigure fgr = GetFigure(i);
-            Vector2 moveValueInputted = InputGetter.Instance.Main_MoveValue2.Get<Vector2>();
-            Vector3 moveValueLocalNormed = new Vector3(moveValueInputted.x, 0, moveValueInputted.y).normalized;
-            Vector3 moveValueLocal = moveValueLocalNormed * (moveSpeed * Time.deltaTime);
-            Vector3 moveValue = fgr.FigureTf.right * moveValueLocal.x + fgr.FigureTf.forward * moveValueLocal.z;
-            fgr.FigureTf.localPosition += moveValue;
-            MoveConstrain(GetOtherFigureIndices(i), i);
-        }
-
-        private void MoveConstrain(List<int> fromIList, int toI)
-        {
-            Vector3 toPos = GetFigure(toI).FigureTf.position;
-
-            foreach (int e in fromIList)
-            {
-                GetFigure(e).FigureTf.position = toPos;
-            }
-        }
-
-        // 突進状態を切り替える。trueなら突進状態にし、falseなら突進状態でなくする。
-        private void SetCharge(bool isCharge)
-        {
-            if (isCharge)
-            {
-                if (isCharging) return;
-                if (playerStamina.IsStaminaZero()) return;
-
-                isCharging = true;
-                moveSpeed = SO_Player.Entity.ChargeSpeed;
-                staminaT = 0;
-            }
-            else
-            {
-                if (!isCharging) return;
-
-                isCharging = false;
-                moveSpeed = SO_Player.Entity.NormalSpeed;
-                staminaT = 0;
-            }
+            if (figureIndex != FigureIndex.Human) return;
         }
     }
 
