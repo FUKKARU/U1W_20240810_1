@@ -17,7 +17,7 @@ namespace IA
         Value3
     }
 
-    public class InputInfo
+    public sealed class InputInfo
     {
         public InputInfo(InputAction inputAction, InputType type)
         {
@@ -182,7 +182,7 @@ namespace IA
 
     #endregion
 
-    public class InputGetter : MonoBehaviour
+    public sealed class InputGetter : MonoBehaviour
     {
         #region
 
