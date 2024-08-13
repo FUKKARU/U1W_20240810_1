@@ -244,11 +244,13 @@ namespace IA
         #endregion
 
         public InputInfo Main_ChargeValue0 { get; private set; } = null;
+        public InputInfo Main_TransformClick { get; private set; } = null;
         public InputInfo Main_MoveValue2 { get; private set; } = null;
 
         private void Init()
         {
             Main_ChargeValue0 = new InputInfo(_inputs.Main.Charge, InputType.Value0).Add(inputInfoList);
+            Main_TransformClick = new InputInfo(_inputs.Main.Transform, InputType.Click).Add(inputInfoList);
             Main_MoveValue2 = new InputInfo(_inputs.Main.Move, InputType.Value2).Add(inputInfoList);
         }
     }

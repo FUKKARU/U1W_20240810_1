@@ -39,12 +39,12 @@ namespace IA
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Hold"",
+                    ""name"": ""Transform"",
                     ""type"": ""Button"",
                     ""id"": ""ba6c9735-a6e2-451b-bbee-092913087f74"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": ""Hold(duration=2)"",
+                    ""interactions"": """",
                     ""initialStateCheck"": false
                 },
                 {
@@ -72,11 +72,11 @@ namespace IA
                 {
                     ""name"": """",
                     ""id"": ""b8d4fd8f-a9e6-443e-9e1f-e03dc1a85006"",
-                    ""path"": ""<Mouse>/leftButton"",
+                    ""path"": ""<Keyboard>/c"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Hold"",
+                    ""action"": ""Transform"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -143,7 +143,7 @@ namespace IA
             // Main
             m_Main = asset.FindActionMap("Main", throwIfNotFound: true);
             m_Main_Charge = m_Main.FindAction("Charge", throwIfNotFound: true);
-            m_Main_Hold = m_Main.FindAction("Hold", throwIfNotFound: true);
+            m_Main_Transform = m_Main.FindAction("Transform", throwIfNotFound: true);
             m_Main_Move = m_Main.FindAction("Move", throwIfNotFound: true);
         }
 
@@ -207,14 +207,14 @@ namespace IA
         private readonly InputActionMap m_Main;
         private List<IMainActions> m_MainActionsCallbackInterfaces = new List<IMainActions>();
         private readonly InputAction m_Main_Charge;
-        private readonly InputAction m_Main_Hold;
+        private readonly InputAction m_Main_Transform;
         private readonly InputAction m_Main_Move;
         public struct MainActions
         {
             private @IA m_Wrapper;
             public MainActions(@IA wrapper) { m_Wrapper = wrapper; }
             public InputAction @Charge => m_Wrapper.m_Main_Charge;
-            public InputAction @Hold => m_Wrapper.m_Main_Hold;
+            public InputAction @Transform => m_Wrapper.m_Main_Transform;
             public InputAction @Move => m_Wrapper.m_Main_Move;
             public InputActionMap Get() { return m_Wrapper.m_Main; }
             public void Enable() { Get().Enable(); }
@@ -228,9 +228,9 @@ namespace IA
                 @Charge.started += instance.OnCharge;
                 @Charge.performed += instance.OnCharge;
                 @Charge.canceled += instance.OnCharge;
-                @Hold.started += instance.OnHold;
-                @Hold.performed += instance.OnHold;
-                @Hold.canceled += instance.OnHold;
+                @Transform.started += instance.OnTransform;
+                @Transform.performed += instance.OnTransform;
+                @Transform.canceled += instance.OnTransform;
                 @Move.started += instance.OnMove;
                 @Move.performed += instance.OnMove;
                 @Move.canceled += instance.OnMove;
@@ -241,9 +241,9 @@ namespace IA
                 @Charge.started -= instance.OnCharge;
                 @Charge.performed -= instance.OnCharge;
                 @Charge.canceled -= instance.OnCharge;
-                @Hold.started -= instance.OnHold;
-                @Hold.performed -= instance.OnHold;
-                @Hold.canceled -= instance.OnHold;
+                @Transform.started -= instance.OnTransform;
+                @Transform.performed -= instance.OnTransform;
+                @Transform.canceled -= instance.OnTransform;
                 @Move.started -= instance.OnMove;
                 @Move.performed -= instance.OnMove;
                 @Move.canceled -= instance.OnMove;
@@ -267,7 +267,7 @@ namespace IA
         public interface IMainActions
         {
             void OnCharge(InputAction.CallbackContext context);
-            void OnHold(InputAction.CallbackContext context);
+            void OnTransform(InputAction.CallbackContext context);
             void OnMove(InputAction.CallbackContext context);
         }
     }
