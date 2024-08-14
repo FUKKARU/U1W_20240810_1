@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Progress;
 
-namespace SO 
+namespace SO
 {
     [CreateAssetMenu(menuName = "SO/SO_Spawner", fileName = "SO_Spawner")]
     public class SO_Spawner : ScriptableObject
@@ -29,18 +31,44 @@ namespace SO
         }
         #endregion
 
-        [SerializeField,Header("スポーン範囲")] List<Vector2> spawnRange;
-        public List<Vector2> SpawnRange => spawnRange;
+        [SerializeField, Header("スポーン時にランダムに出力するX座標の始点")] float x0;
+        public float X0 => x0;
+        [SerializeField, Header("スポーン時にランダムに出力するY座標の始点")] float y0;
+        public float Y0 => y0;
+        [SerializeField, Header("スポーン時にランダムに出力するX座標の終点")] float x1;
+        public float X1 => x1;
+        [SerializeField, Header("スポーン時にランダムに出力するY座標の終点")] float y1;
+        public float Y1 => y1;
 
-        [SerializeField, Header("キノコオブジェクト")] private GameObject kinokoObj;
-        public GameObject KinokoObj=> kinokoObj;
+        [SerializeField, Header("スポーン用オブジェクトを格納")] List<SpawnObj> spawnObjs;
+        public List<SpawnObj> SpawnObjs => spawnObjs;
 
-        [SerializeField, Header("リンゴオブジェクト")] private GameObject appleObj;
-        public GameObject AppleObj => appleObj;
-
-        [SerializeField, Header("油あげオブジェクト")] private GameObject aburaageObj;
-        public GameObject AburaageObj => aburaageObj;
+        /// <summary>
+        /// メンバ変数の名前からインスタンスを取得
+        /// </summary>
+        /// <param name="name">SpawnObjクラスのメンバ変数として登録されている名前を指定</param>
+        /// <returns></returns>
+        public SpawnObj GetInstanceByName(string name)
+        {
+            foreach (SpawnObj spawnObj in SpawnObjs)
+            {
+                if (spawnObj.name == name)
+                {
+                    return spawnObj;
+                }
+            }
+            return null;
+        }
     }
+}
+
+
+[System.Serializable]
+public class SpawnObj
+{
+    public string name;
+    public GameObject spawnObj;
+    public  float createOffsetTime;
 }
 
 
