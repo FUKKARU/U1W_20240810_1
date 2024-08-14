@@ -3,7 +3,12 @@ guid: 0aebdc12667a9c347b4b1356054ca617
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Aburaage
+    second: {fileID: 2100000, guid: 6ca43eefbd653df49ad39eb741e33bbf, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
