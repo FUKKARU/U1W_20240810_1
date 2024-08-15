@@ -17,7 +17,7 @@ namespace Main.Spawn
         public int appleCreatedNum { get; private set; } = 0;
         const byte maxApplePerTree = 3;
         [SerializeField, Header("ÉXÉ|Å[ÉìÇµÇƒó«Ç¢îÕàÕ")] List<GameObject> SpawnRange;
-        public int kinokoCreatedNum { get; private set; }
+        public int kinokoCreatedNum { get; private set; } = 0;
         List<Vector2> spawnRangeVector;
         SpawnObj kinokoInstance;
         SpawnObj appleInstance;
@@ -51,14 +51,17 @@ namespace Main.Spawn
         IEnumerator CreateKinoko()
         {
             Vector2 spawnPos;
+            if (kinokoCreatedNum >= spawnerSO.ÇlaxKinokoNum) goto END_KINOKO;
             do
             {
                 spawnPos = new Vector2(
                 Random.Range(spawnerSO.X0, spawnerSO.X1),
                 Random.Range(spawnerSO.Y0, spawnerSO.Y1));
             } while (CheckSpawnPoint(spawnPos) == false);
+            kinokoCreatedNum++;
             Quaternion rot = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
             Instantiate(kinokoInstance.spawnObj, new Vector3(spawnPos.x, 0, spawnPos.y), rot);
+            END_KINOKO:
             yield return new WaitForSeconds(kinokoInstance.createOffsetTime);
             StartCoroutine(CreateKinoko());
         }
@@ -98,13 +101,10 @@ namespace Main.Spawn
         }
         IEnumerator CreateApple()
         {
-            int loop = 0;
             bool created = false;
-            if (appleCreatedNum >= appleTrees.Count * maxApplePerTree) goto END;
-            while (!created && loop < 100)
+            if (appleCreatedNum >= appleTrees.Count * maxApplePerTree) goto END_APPLE;
+            while (!created)
             {
-                loop++;
-                if (loop == 99) print("loop");
                 GameObject appleTree = appleTrees[Random.Range(0, appleTrees.Count)];
 
                 Apple.AppleTreeMov appleTreeComponent = appleTree.GetComponent<Apple.AppleTreeMov>();
@@ -122,7 +122,7 @@ namespace Main.Spawn
                                 appleTreeComponent.apple1Created = true;
                                 created = true;
                             }
-                                break;
+                            break;
                         case 2:
                             appleName = "applePos2";
                             if (!appleTreeComponent.apple2Created)
@@ -154,7 +154,7 @@ namespace Main.Spawn
 
                 }
             }
-        END:
+        END_APPLE:
             yield return new WaitForSeconds(appleInstance.createOffsetTime);
             StartCoroutine(CreateApple());
         }
@@ -164,7 +164,7 @@ namespace Main.Spawn
         }
         public void AppleNumDec(int num)
         {
-            appleCreatedNum-=num;
+            appleCreatedNum -= num;
         }
 
     }

@@ -11,7 +11,9 @@ namespace Main.Player
         [SerializeField] int appleNum = 0;
         int aburaageNum = 0;
         bool onInteract = false;
-        public float moveSpeed = 5f; // キャラクターの移動速度
+        [SerializeField] Transform stackStartPoint;
+        List<GameObject> collectedObjects = new List<GameObject>();
+        public float moveSpeed = 5f;
 
         void Update()
         {
@@ -28,7 +30,19 @@ namespace Main.Player
 
             // キャラクターを移動
             transform.position += moveDirection * moveSpeed * Time.deltaTime;
+            StackHead();
         }
+
+        void StackHead()
+        {
+            for (int i = 0; i < collectedObjects.Count; i++)
+            {
+                GameObject obj = collectedObjects[i];
+                obj.transform.position = stackStartPoint.position + new Vector3(0, i * 0.25f, 0);
+                obj.transform.localRotation = Quaternion.identity;
+            }
+        }
+
 
         private void OnTriggerEnter(Collider other)
         {
@@ -36,6 +50,7 @@ namespace Main.Player
             {
                 kinokoNum++;
                 Spawn.SpawnItem.Instance.KinokoNumDec();
+                collectedObjects.Add(other.gameObject);
             }
 
             else if (other.gameObject.tag == "Tree")
@@ -57,7 +72,9 @@ namespace Main.Player
             if (collision.gameObject.tag == "Item/Apple")
             {
                 appleNum++;
-                Destroy(collision.gameObject);
+                collision.gameObject.GetComponent<SphereCollider>().enabled = false;
+  
+                collectedObjects.Add(collision.gameObject);
             }
         }
 
