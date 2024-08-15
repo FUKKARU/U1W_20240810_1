@@ -219,6 +219,7 @@ namespace Main.Player
             Vector3 moveValueLocalNormed = new Vector3(moveValueInputted.x, 0, moveValueInputted.y).normalized;
             Vector3 moveValueLocal = moveValueLocalNormed * (moveSpeed * Time.deltaTime);
             Vector3 moveValue = fgr.FigureTf.right * moveValueLocal.x + fgr.FigureTf.forward * moveValueLocal.z;
+            if (!Border.Border.Instance.IsIn(fgr.FigureTf.position + moveValue)) return;
             fgr.FigureTf.position += moveValue;
 
             // 他の形態を現在の形態にコンストレイン
