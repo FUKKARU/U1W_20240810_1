@@ -11,6 +11,7 @@ namespace Main.Border
         [Space(25)]
         [SerializeField, Header("LineRendererコンポーネントをアクティブにする")] private bool isLineRendererActive;
         [SerializeField, Header("線の太さ")] private float thin;
+        [SerializeField, Header("線の色")] private Color color;
 
         private List<Transform> pinList = new();
 
@@ -96,6 +97,8 @@ namespace Main.Border
                 e.gameObject.SetActive(_isLineRendererActive);
 
             if (!_isLineRendererActive) return;
+
+            lineRenderer.material.color = color;
 
             int pinNum = pins.childCount;
 

@@ -1,3 +1,4 @@
+using SO;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -125,6 +126,7 @@ namespace Title.Button
             {
                 case ContactType.PointerEnter: // ← ホバーすると、PointerEnterの説明が見れる
                     {
+#if false
                         // この中の処理は、【終了ボタンにポインターが乗った】ときに呼ばれる。
 
                         // 使えるものたち
@@ -155,6 +157,7 @@ namespace Title.Button
                         exitButtonInfo.Image.sprite = exitButtonSprites.Click;  // 2
                         StartCoroutine(General.Ex.Wait(() => General.Flow.QuitGame(), 1.0f));  // 3
                         // ↑ Wait()やQuitGame()は、自分で作った関数です。Unityの関数ではありません！
+#endif
                     }
                     break;
 
@@ -195,13 +198,13 @@ namespace Title.Button
             {
                 case ContactType.PointerEnter:
                     {
-
+                        startButtonInfo.Image.sprite = startButtonSprites.Hover;
                     }
                     break;
 
                 case ContactType.PointerExit:
                     {
-
+                        startButtonInfo.Image.sprite = startButtonSprites.Normal;
                     }
                     break;
 
@@ -219,7 +222,16 @@ namespace Title.Button
 
                 case ContactType.PointerClick:
                     {
+                        isExitButtonHandlable = false;
+                        isStartButtonHandlable = false;
+                        isCreditButtonHandlable = false;
 
+                        startButtonInfo.Image.sprite = startButtonSprites.Click;
+
+                        StartCoroutine(General.Ex.Wait(
+                                () => General.Flow.SceneChange(SO_SceneName.Entity.Main, false),
+                                SO_System.Entity.ButtonDur
+                                ));
                     }
                     break;
 
