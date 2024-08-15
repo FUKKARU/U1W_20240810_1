@@ -1,3 +1,4 @@
+using General;
 using SO;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,9 +21,12 @@ namespace Title.Button
         private ButtonInfo startButtonInfo => _buttonInfoList[1];
         private ButtonInfo creditButtonInfo => _buttonInfoList[2];
 
-        private bool isExitButtonHandlable = true;
-        private bool isStartButtonHandlable = true;
-        private bool isCreditButtonHandlable = true;
+        [SerializeField, Header("AudioSource")] private AudioSource _audioSource;
+        private AudioSource audioSource => _audioSource;
+
+        private bool isExitButtonHandlable = false;
+        private bool isStartButtonHandlable = false;
+        private bool isCreditButtonHandlable = false;
 
         private enum ContactType
         {
@@ -95,6 +99,10 @@ namespace Title.Button
                 AddListener(EventTriggerType.PointerClick, () => OnStartButtonHandled(ContactType.PointerClick));
             creditButtonInfo.EventTrigger.
                 AddListener(EventTriggerType.PointerClick, () => OnCreditButtonHandled(ContactType.PointerClick));
+
+            StartCoroutine(Ex.Wait(() => isExitButtonHandlable = true, SO_System.Entity.BeforeButtonDur));
+            StartCoroutine(Ex.Wait(() => isStartButtonHandlable = true, SO_System.Entity.BeforeButtonDur));
+            StartCoroutine(Ex.Wait(() => isCreditButtonHandlable = true, SO_System.Entity.BeforeButtonDur));
         }
 
         private void OnDisable()
@@ -114,6 +122,8 @@ namespace Title.Button
             _buttonInfoList[0].Dispose();
             _buttonInfoList[0] = null;
             _buttonInfoList = null;
+
+            _audioSource = null;
         }
 
         #endregion
@@ -124,46 +134,15 @@ namespace Title.Button
 
             switch (type)
             {
-                case ContactType.PointerEnter: // ← ホバーすると、PointerEnterの説明が見れる
+                case ContactType.PointerEnter:
                     {
-#if false
-                        // この中の処理は、【終了ボタンにポインターが乗った】ときに呼ばれる。
-
-                        // 使えるものたち
-                        var _1 = exitButtonSprites.Normal;  // 終了ボタンの、通常時のスプライト
-                        var _2 = exitButtonSprites.Hover;   // 終了ボタンの、ホバー時のスプライト
-                        var _3 = exitButtonSprites.Click;   // 終了ボタンの、クリック時のスプライト
-                        var _4 = exitButtonInfo.Image;      // 終了ボタンの、Imageコンポーネント
-                        var _5 = startButtonSprites.Normal; // 開始ボタンの、通常時のスプライト
-                        var _6 = startButtonSprites.Hover;  // 開始ボタンの、ホバー時のスプライト
-                        var _7 = startButtonSprites.Click;  // 開始ボタンの、クリック時のスプライト
-                        var _8 = startButtonInfo.Image;     // 開始ボタンの、Imageコンポーネント
-                        var _9 = creditButtonSprites.Normal;// クレジットボタンの、通常時のスプライト
-                        var _a = creditButtonSprites.Hover; // クレジットボタンの、ホバー時のスプライト
-                        var _b = creditButtonSprites.Click; // クレジットボタンの、クリック時のスプライト
-                        var _c = creditButtonInfo.Image;    // クレジットボタンの、Imageコンポーネント
-                        var _d = isExitButtonHandlable;     // OnExitButtonHandled(この関数)が有効ならtrue、有効でないならfalse
-                        var _e = isStartButtonHandlable;    // OnStartButtonHandledが有効ならtrue、有効でないならfalse
-                        var _f = isCreditButtonHandlable;   // OnCreditButtonHandledが有効ならtrue、有効でないならfalse
-
-                        // 【例】
-                        // 終了ボタンにポインターが乗った時、
-                        // 1. (このボタンを含む)全てのボタンについて、操作が行われたときに呼ばれる関数の中の処理を行わないようにし、
-                        // 2. 終了ボタンのスプライトをクリック時のスプライトにする。
-                        // 3. その後、1秒待ってからゲームを終了する。
-                        isExitButtonHandlable = false;  // 1
-                        isStartButtonHandlable = false;  // 1
-                        isCreditButtonHandlable = false;  // 1
-                        exitButtonInfo.Image.sprite = exitButtonSprites.Click;  // 2
-                        StartCoroutine(General.Ex.Wait(() => General.Flow.QuitGame(), 1.0f));  // 3
-                        // ↑ Wait()やQuitGame()は、自分で作った関数です。Unityの関数ではありません！
-#endif
+                        exitButtonInfo.Image.sprite = exitButtonSprites.Hover;
                     }
                     break;
 
                 case ContactType.PointerExit:
                     {
-
+                        exitButtonInfo.Image.sprite = exitButtonSprites.Normal;
                     }
                     break;
 
@@ -181,7 +160,18 @@ namespace Title.Button
 
                 case ContactType.PointerClick:
                     {
+                        isExitButtonHandlable = false;
+                        isStartButtonHandlable = false;
+                        isCreditButtonHandlable = false;
 
+                        audioSource.Raise(SO_Sound.Entity.ButtonClickSE, SType.SE);
+
+                        exitButtonInfo.Image.sprite = exitButtonSprites.Click;
+
+                        StartCoroutine(Ex.Wait(
+                                () => Flow.QuitGame(),
+                                SO_System.Entity.AfterButtonDur
+                                ));
                     }
                     break;
 
@@ -226,11 +216,13 @@ namespace Title.Button
                         isStartButtonHandlable = false;
                         isCreditButtonHandlable = false;
 
+                        audioSource.Raise(SO_Sound.Entity.ButtonClickSE, SType.SE);
+
                         startButtonInfo.Image.sprite = startButtonSprites.Click;
 
-                        StartCoroutine(General.Ex.Wait(
-                                () => General.Flow.SceneChange(SO_SceneName.Entity.Main, false),
-                                SO_System.Entity.ButtonDur
+                        StartCoroutine(Ex.Wait(
+                                () => Flow.SceneChange(SO_SceneName.Entity.Main, false),
+                                SO_System.Entity.AfterButtonDur
                                 ));
                     }
                     break;
@@ -248,13 +240,13 @@ namespace Title.Button
             {
                 case ContactType.PointerEnter:
                     {
-
+                        creditButtonInfo.Image.sprite = creditButtonSprites.Hover;
                     }
                     break;
 
                 case ContactType.PointerExit:
                     {
-
+                        creditButtonInfo.Image.sprite = creditButtonSprites.Normal;
                     }
                     break;
 
@@ -272,7 +264,18 @@ namespace Title.Button
 
                 case ContactType.PointerClick:
                     {
+                        isExitButtonHandlable = false;
+                        isStartButtonHandlable = false;
+                        isCreditButtonHandlable = false;
 
+                        audioSource.Raise(SO_Sound.Entity.ButtonClickSE, SType.SE);
+
+                        creditButtonInfo.Image.sprite = creditButtonSprites.Click;
+
+                        StartCoroutine(Ex.Wait(
+                                () => Flow.SceneChange(SO_SceneName.Entity.Credit, false),
+                                SO_System.Entity.AfterButtonDur
+                                ));
                     }
                     break;
 

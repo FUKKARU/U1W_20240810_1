@@ -28,7 +28,10 @@ namespace SO
         }
         #endregion
 
-        [SerializeField, Header("ボタンを押した後、何秒待つか")] private float _buttonDur;
-        public float ButtonDur => _buttonDur;
+        [SerializeField, Header("シーン遷移後、何秒待ってからボタンを有効にするか")] private float _beforeButtonDur;
+        public float BeforeButtonDur => _beforeButtonDur;
+
+        [SerializeField, Header("ボタンを押した後、何秒待って処理を行うか")] private float _afterButtonDur;
+        public float AfterButtonDur => _afterButtonDur;
     }
 }

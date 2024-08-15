@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac0ead413ee7918439dd9ff1f1b0a76c, type: 3}
   m_Name: SO_System
   m_EditorClassIdentifier: 
-  _buttonDur: 0.5
+  _beforeButtonDur: 0.5
+  _afterButtonDur: 0.5
