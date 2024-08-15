@@ -16,12 +16,12 @@ MonoBehaviour:
   y0: -50
   x1: 50
   y1: 50
-  spawnRange: []
-  kinokoObj: {fileID: 0}
-  appleObj: {fileID: 0}
-  aburaageObj: {fileID: 0}
   spawnObjs:
   - name: Kinoko
     spawnObj: {fileID: 919132149155446097, guid: 2fb2cd0950e7a5746b6e8c64642ba6dd,
+      type: 3}
+    createOffsetTime: 1
+  - name: Apple
+    spawnObj: {fileID: 1853025658139187464, guid: cd1cc05ba32aadc48a1d7faabbd170bc,
       type: 3}
     createOffsetTime: 1
