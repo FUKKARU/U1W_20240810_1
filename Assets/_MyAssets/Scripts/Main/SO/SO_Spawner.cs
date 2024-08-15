@@ -42,6 +42,9 @@ namespace SO
         [SerializeField, Header("スポーン用オブジェクトを格納")] List<SpawnObj> spawnObjs;
         public List<SpawnObj> SpawnObjs => spawnObjs;
 
+        [SerializeField, Header("キノコの最大数")] int maxKinokoNum;
+        public int ＭaxKinokoNum => maxKinokoNum;
+
         /// <summary>
         /// メンバ変数の名前からインスタンスを取得
         /// </summary>
