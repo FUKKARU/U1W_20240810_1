@@ -132,6 +132,7 @@ MonoBehaviour:
   lineRenderer: {fileID: 5559643725996002466}
   isLineRendererActive: 1
   thin: 1
+  material: {fileID: 2100000, guid: 7ef8ca2460452874ab34008b7ddadf6b, type: 2}
   color: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &3043464720911148177
 GameObject:
@@ -358,7 +359,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7ef8ca2460452874ab34008b7ddadf6b, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

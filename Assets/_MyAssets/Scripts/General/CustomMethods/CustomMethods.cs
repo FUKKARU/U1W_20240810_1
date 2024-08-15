@@ -7,6 +7,11 @@ namespace General
 {
     public static class Ex
     {
+        public static void Pass()
+        {
+            return;
+        }
+
         public static IEnumerator Wait(Action action, float waitSeconds)
         {
             yield return new WaitForSeconds(waitSeconds);
