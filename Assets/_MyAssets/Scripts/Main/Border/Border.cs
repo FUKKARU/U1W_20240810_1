@@ -120,22 +120,25 @@ namespace Main.Border
         /// </summary>
         internal bool IsIn(Vector2 pos)
         {
-            if (pinList == null) return false;
-            if (pinList.Count <= 2) return false;
+            if (pinList == null) throw new System.Exception($"{pinList}‚ªnull‚Å‚·");
+            if (pinList.Count <= 2) throw new System.Exception($"pin‚Ì”‚ª2‚ÂˆÈ‰º‚Å‚·");
 
+            float th = 0;
             for (int i = 0; i < pinList.Count; i++)
             {
-                Vector2 from = pinList[i].position.XOZ2XY();
-                Vector2 to = ((i < pinList.Count - 1) ? pinList[i + 1].position : pinList[0].position).XOZ2XY();
+                Vector2 fromPinPos = pinList[i].position.XOZ2XY();
+                Vector2 toPinPos = ((i < pinList.Count - 1) ? pinList[i + 1].position : pinList[0].position).XOZ2XY();
 
-                Vector2 axisBase = to - from;
-                Vector2 axisTarget = pos - from;
+                Vector2 fromVec = fromPinPos - pos;
+                Vector2 toVec = toPinPos - pos;
 
-                if ((axisBase, axisTarget).Cross() > 0)
-                    return false;
+                float dth = Mathf.Acos(Vector2.Dot(toVec.normalized, fromVec.normalized));  // ‰ñ“]Šp‚Ìâ‘Î’lA[0, ƒÎ]
+                if ((fromVec, toVec).Cross() < 0) dth *= -1;
+
+                th += dth;
             }
 
-            return true;
+            return Mathf.Abs(th) >= 0.01f;
         }
 
         /// <summary>
