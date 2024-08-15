@@ -1,42 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
-using General;
 
 namespace Main.Border
 {
     [ExecuteInEditMode]
-    public sealed class Border : MonoBehaviour
+    internal sealed class Border : MonoBehaviour
     {
-        #region
-
-        public static Border Instance { get; private set; } = null;
-
-        private void OnEnable()
-        {
-#if UNITY_EDITOR
-            if (!UnityEditor.EditorApplication.isPlaying) return;
-#endif
-
-            if (!Instance)
-                Instance = this;
-            else
-                Destroy(gameObject);
-        }
-
-        private void OnDisable()
-        {
-#if UNITY_EDITOR
-            if (!UnityEditor.EditorApplication.isPlaying) return;
-#endif
-
-            pinList = null;
-            pins = null;
-            lineRenderer = null;
-            Instance = null;
-        }
-
-        #endregion
-
         [SerializeField, Header("ピンの親のTransform(時計回りに囲うこと！)")] private Transform pins;
         [SerializeField, Header("LineRendererコンポーネント")] private LineRenderer lineRenderer;
         [Space(25)]
@@ -45,17 +14,83 @@ namespace Main.Border
 
         private List<Transform> pinList = new();
 
+#if UNITY_EDITOR
+        private void OnEnable()
+        {
+            if (IsPlaying())
+            {
+                if (!pins) throw new System.Exception($"{nameof(pins)}が設定されていません");
+                if (!lineRenderer) throw new System.Exception($"{nameof(lineRenderer)}が設定されていません");
+
+                if (isLineRendererActive) Debug.LogWarning($"{nameof(lineRenderer)}がアクティブです");
+
+                UpdatePins(isLineRendererActive);
+            }
+            else
+            {
+
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (IsPlaying())
+            {
+                pinList = null;
+                pins = null;
+                lineRenderer = null;
+            }
+            else
+            {
+
+            }
+        }
+
         private void Update()
+        {
+            if (IsPlaying())
+            {
+
+            }
+            else
+            {
+                if (!pins) throw new System.Exception($"{nameof(pins)}が設定されていません");
+                if (!lineRenderer) throw new System.Exception($"{nameof(lineRenderer)}が設定されていません");
+
+                UpdatePins(isLineRendererActive);
+            }
+        }
+#else
+        private void OnEnable()
         {
             if (!pins) throw new System.Exception($"{nameof(pins)}が設定されていません");
             if (!lineRenderer) throw new System.Exception($"{nameof(lineRenderer)}が設定されていません");
 
-#if UNITY_EDITOR
-            bool _isLineRendererActive = isLineRendererActive;
-#else
-            bool _isLineRendererActive = false;
+            UpdatePins(false);
+        }
+
+        private void OnDisable()
+        {
+            pinList = null;
+            pins = null;
+            lineRenderer = null;
+        }
+
+        private void Update()
+        {
+
+        }
 #endif
 
+#if UNITY_EDITOR
+        private bool IsPlaying()
+        {
+            return UnityEditor.EditorApplication.isPlaying;
+        }
+#endif
+
+        private void UpdatePins(bool _isLineRendererActive)
+        {
             lineRenderer.enabled = _isLineRendererActive;
             foreach (Transform e in pins)
                 e.gameObject.SetActive(_isLineRendererActive);
@@ -80,7 +115,7 @@ namespace Main.Border
         /// <summary>
         /// 範囲の中に含まれているかどうか調べる(y軸を無視する)
         /// </summary>
-        public bool IsIn(Vector2 pos)
+        internal bool IsIn(Vector2 pos)
         {
             if (pinList == null) return false;
             if (pinList.Count <= 2) return false;
@@ -103,9 +138,27 @@ namespace Main.Border
         /// <summary>
         /// 範囲の中に含まれているかどうか調べる(y軸を無視する)
         /// </summary>
-        public bool IsIn(Vector3 pos)
+        internal bool IsIn(Vector3 pos)
         {
             return IsIn(pos.XOZ2XY());
+        }
+    }
+
+    internal static class Ex
+    {
+        internal static Vector2 XOZ2XY(this Vector3 v)
+        {
+            return new(v.x, v.z);
+        }
+
+        internal static Vector3 XY2XOZ(this Vector2 v)
+        {
+            return new(v.x, 0, v.y);
+        }
+
+        internal static float Cross(this (Vector2 a, Vector2 b) v)
+        {
+            return v.a.x * v.b.y - v.a.y * v.b.x;
         }
     }
 }

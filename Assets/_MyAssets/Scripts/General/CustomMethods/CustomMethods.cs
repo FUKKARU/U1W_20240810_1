@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using UnityEditor;
 using UnityEngine;
 
@@ -5,7 +7,7 @@ namespace General
 {
     public static class Ex
     {
-        public static System.Collections.IEnumerator Wait(System.Action action, float waitSeconds)
+        public static IEnumerator Wait(Action action, float waitSeconds)
         {
             yield return new WaitForSeconds(waitSeconds);
             action();
@@ -83,21 +85,6 @@ namespace General
             {
                 ProjectWindowUtil.CreateScriptAssetFromTemplateFile(templateFilePath, newScriptName);
             }
-        }
-
-        public static Vector2 XOZ2XY(this Vector3 v)
-        {
-            return new(v.x, v.z);
-        }
-
-        public static Vector3 XY2XOZ(this Vector2 v)
-        {
-            return new(v.x, 0, v.y);
-        }
-
-        public static float Cross(this (Vector2 a, Vector2 b) v)
-        {
-            return v.a.x * v.b.y - v.a.y * v.b.x;
         }
     }
 }

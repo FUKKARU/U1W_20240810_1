@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using SO;
 using IA;
+using UnityEngine.Rendering.Universal;
 
 namespace Main.Player
 {
@@ -25,15 +26,21 @@ namespace Main.Player
         [Space(25)]
         [SerializeField] private Cinemachine.CinemachineFreeLook freeLookCamera;
         [SerializeField] private Transform freeLookCameraTf;
+        [Space(25)]
+        [SerializeField] private Transform initPlaceTf;
+        [SerializeField, Header("ステージのボーダー")] private Border.Border stageBorder;
 
         private PlayerMoveBhv impl;
 
         private void OnEnable()
         {
+            if (!stageBorder) throw new System.Exception($"{nameof(stageBorder)}が設定されていません");
+
             impl = new(
                 new(figure1, figureTf1, figureRb1, headTf1, aboveHeadTf1, footTf1),
                 new(figure2, figureTf2, figureRb2, headTf2, aboveHeadTf2, footTf2),
-                freeLookCamera, freeLookCameraTf
+                freeLookCamera, freeLookCameraTf,
+                initPlaceTf, stageBorder
                 );
         }
 
@@ -61,22 +68,34 @@ namespace Main.Player
         private readonly PlayerFigure figure2;
         private Cinemachine.CinemachineFreeLook freeLookCamera;
         private Transform freeLookCameraTf;
+        private Border.Border stageBorder;
 
         private readonly PlayerStamina playerStamina;
 
         private FigureIndex figureIndex = FigureIndex.Fox;  // 形態のインデックス番号
         private float moveSpeed = SO_Player.Entity.NormalSpeed;  // 移動スピード
+        private Vector3 initPosition = Vector3.zero;  // 初期座標
+        private Vector3 prePosition = Vector3.zero;  // 前フレームでの座標
         private float staminaT = 0;  // スタミナ増減の時間カウンタ
         private bool isStaminaIncreasable = true;  // スタミナが回復可能かどうか
         private bool isCharging = false;  // 突進中かどうか
 
+        private bool isInitPositionChecked = false;  // initPositionが有効な値かどうか、確認したフラグ
+
         public PlayerMoveBhv(PlayerFigure figure1, PlayerFigure figure2,
-            Cinemachine.CinemachineFreeLook freeLookCamera, Transform freeLookCameraTf)
+            Cinemachine.CinemachineFreeLook freeLookCamera, Transform freeLookCameraTf,
+            Transform initPlaceTf, Border.Border stageBorder)
         {
             this.figure1 = figure1;
             this.figure2 = figure2;
             this.freeLookCamera = freeLookCamera;
             this.freeLookCameraTf = freeLookCameraTf;
+            initPosition = initPlaceTf.position;
+            prePosition = initPosition;
+            this.stageBorder = stageBorder;
+
+            figure1.FigureTf.position = initPosition;
+            figure2.FigureTf.position = initPosition;
 
             playerStamina = new();
 
@@ -89,6 +108,7 @@ namespace Main.Player
             figure2.Dispose();
             freeLookCamera = null;
             freeLookCameraTf = null;
+            stageBorder = null;
         }
 
         public void Update()
@@ -97,12 +117,21 @@ namespace Main.Player
             if (figure2.IsNullExist()) return;
             if (!freeLookCamera) return;
             if (!freeLookCameraTf) return;
+            if (!stageBorder) return;
+
+            if (!isInitPositionChecked)
+            {
+                isInitPositionChecked = true;
+
+                if (!stageBorder.IsIn(initPosition))
+                    throw new System.Exception($"プレイヤーの初期座標 {initPosition} が、ステージの範囲内にありません");
+            }
 
             // 変身
             TransformBhv();
 
             // 慣性を消す
-            ResetInertiaXZBhv();
+            ResetInertiaBhv();
 
             // 回転・移動
             TurnBhv();
@@ -187,7 +216,7 @@ namespace Main.Player
         }
 
         // 慣性を消す(Rigidbodyの速度の、xとzを0にする)
-        private void ResetInertiaXZBhv()
+        private void ResetInertiaBhv()
         {
             Vector3 vel = GetFigure(figureIndex).FigureRb.velocity;
             vel.x = 0; vel.z = 0;
@@ -211,16 +240,18 @@ namespace Main.Player
             }
         }
 
-        // プレイヤーを前後左右に動かす
+        // 移動
         private void MoveBhv()
         {
             PlayerFigure fgr = GetFigure(figureIndex);
+            if (fgr.FigureTf.position.y < -100) fgr.FigureTf.position = initPosition;  // 落下し過ぎたら、初期座標に戻す
             Vector2 moveValueInputted = InputGetter.Instance.Main_MoveValue2.Get<Vector2>();
             Vector3 moveValueLocalNormed = new Vector3(moveValueInputted.x, 0, moveValueInputted.y).normalized;
             Vector3 moveValueLocal = moveValueLocalNormed * (moveSpeed * Time.deltaTime);
             Vector3 moveValue = fgr.FigureTf.right * moveValueLocal.x + fgr.FigureTf.forward * moveValueLocal.z;
-            if (!Border.Border.Instance.IsIn(fgr.FigureTf.position + moveValue)) return;
             fgr.FigureTf.position += moveValue;
+            if (!stageBorder.IsIn(fgr.FigureTf.position)) fgr.FigureTf.position = prePosition;
+            prePosition = fgr.FigureTf.position;
 
             // 他の形態を現在の形態にコンストレイン
             Vector3 toPos = GetFigure(figureIndex).FigureTf.position;
