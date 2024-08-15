@@ -30,7 +30,14 @@ namespace SO
 
         [Header("シーン名")]
         [Space(25)]
-        [Header("タイトル")] public string Title;
-        [Header("メイン")] public string Main;
+
+        [SerializeField, Header("タイトル")] private string _title;
+        public string Title => _title;
+
+        [SerializeField, Header("クレジット")] private string _credit;
+        public string Credit => _credit;
+
+        [SerializeField, Header("メイン")] private string _main;
+        public string Main => _main;
     }
 }
