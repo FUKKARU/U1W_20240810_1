@@ -90,7 +90,7 @@ namespace IA
                 {
                     ""name"": """",
                     ""id"": ""b8d4fd8f-a9e6-443e-9e1f-e03dc1a85006"",
-                    ""path"": ""<Keyboard>/c"",
+                    ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -167,7 +167,7 @@ namespace IA
                 {
                     ""name"": """",
                     ""id"": ""e2a0036a-b2a4-40f4-bed7-6f670133033e"",
-                    ""path"": ""<Mouse>/rightButton"",
+                    ""path"": ""<Keyboard>/c"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

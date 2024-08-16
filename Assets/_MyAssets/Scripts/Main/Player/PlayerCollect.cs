@@ -1,15 +1,14 @@
 using SO;
-using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
 
 namespace Main.Player
 {
     public class PlayerCollect : MonoBehaviour
     {
+        [SerializeField] PlayerMove playerMove;
+
         public int kinokoNum { get; private set; } = 0;
         public int appleNum { get; private set; } = 0;
         public int aburaageNum { get; private set; } = 0;
@@ -35,12 +34,10 @@ namespace Main.Player
             GameObject Canvas = GameObject.FindGameObjectWithTag(tagSO.CanvasTag);
             tradeOrNotUI = Canvas.transform.Find(hierarchyPathSO.TradeOrNot).gameObject;
             initiateTradeButton = tradeOrNotUI.transform.Find(hierarchyPathSO.InitiateTradeButon).GetComponent<Button>();
-            
         }
 
         void Update()
         {
-
             FindHuman();
         }
 
@@ -60,11 +57,13 @@ namespace Main.Player
 
         void FindHuman()
         {
+            if (playerMove.IsFoxFigure()) return;
+
             GameObject[] humans = GameObject.FindGameObjectsWithTag(tagSO.HumanTag);
             float closestDistance = Mathf.Infinity;
             foreach (GameObject human in humans)
             {
-                float distanceToHuman = (human.transform.position - transform.position).sqrMagnitude;
+                float distanceToHuman = playerMove.CalcSqrMagnitude(human.transform.position);
                 if (distanceToHuman < closestDistance)
                 {
                     closestDistance = distanceToHuman;
@@ -107,7 +106,7 @@ namespace Main.Player
 
         public void GetAburaage(int usedAppleNum, int usedKinokoNum)//–û—g‚°Žæ“¾‚ÌÛ‚Ìˆ—
         {
-            
+
             kinokoNum -= usedKinokoNum;
             appleNum -= usedAppleNum;
             List<GameObject> destroyObjects = new List<GameObject>();
@@ -132,8 +131,10 @@ namespace Main.Player
             StackHead();
         }
 
-        private void OnTriggerEnter(Collider other)
+        public void OnTriggerEnterBhv(Collider other)
         {
+            if (!playerMove.IsFoxFigure()) return;
+
             if (other.gameObject.tag == tagSO.KinokoTag)
             {
                 kinokoNum++;
@@ -149,11 +150,12 @@ namespace Main.Player
                 appleTreeComponent.FreeApple();
 
             }
-
         }
 
-        private void OnCollisionEnter(Collision collision)
+        public void OnCollisionEnterBhv(Collision collision)
         {
+            if (!playerMove.IsFoxFigure()) return;
+
             if (collision.gameObject.tag == tagSO.AppleTag)
             {
                 appleNum++;
@@ -163,7 +165,5 @@ namespace Main.Player
                 StackHead();
             }
         }
-
-
     }
 }

@@ -32,7 +32,7 @@ namespace Main.Trade
             tradeRateText = tradeUI.transform.Find(hierarchyPathSO.TradeRateText).GetComponent<TextMeshProUGUI>();
             tradeButton = tradeUI.transform.Find(hierarchyPathSO.TradeButton).GetComponent<Button>();
 
-            playerCollectScript = GameObject.FindGameObjectWithTag(tagSO.PlayerTag).transform.Find("Figures/Figure_1").GetComponent<PlayerCollect>();
+            playerCollectScript = GameObject.FindGameObjectWithTag(tagSO.PlayerTag).transform.Find("PlayerCollect").GetComponent<PlayerCollect>();
 
 
             do

@@ -14,6 +14,7 @@ namespace Main.Player
         [SerializeField] private Transform headTf1;
         [SerializeField] private Transform aboveHeadTf1;
         [SerializeField] private Transform footTf1;
+        [SerializeField] private Transform stackRoot1;
         [SerializeField] private Animator animator1;
         [Space(25)]
         [Header("形態 2")]
@@ -23,10 +24,17 @@ namespace Main.Player
         [SerializeField] private Transform headTf2;
         [SerializeField] private Transform aboveHeadTf2;
         [SerializeField] private Transform footTf2;
+        [SerializeField] private Transform stackRoot2;
         [SerializeField] private Animator animator2;
         [Space(25)]
         [SerializeField] private Cinemachine.CinemachineFreeLook freeLookCamera;
         [SerializeField] private Transform freeLookCameraTf;
+        [Space(25)]
+        [SerializeField] private Transform stackStartPoint;
+        [Space(25)]
+        [SerializeField] private SpriteRenderer staminaBackSr;
+        [SerializeField] private Transform staminaGaugeTf;
+        [SerializeField] private SpriteRenderer staminaGaugeSr;
         [Space(25)]
         [SerializeField] private Transform initPlaceTf;
         [SerializeField, Header("ステージのボーダー")] private Border.Border stageBorder;
@@ -38,9 +46,10 @@ namespace Main.Player
             if (!stageBorder) throw new System.Exception($"{nameof(stageBorder)}が設定されていません");
 
             impl = new(
-                new(figure1, figureTf1, figureRb1, headTf1, aboveHeadTf1, footTf1, animator1),
-                new(figure2, figureTf2, figureRb2, headTf2, aboveHeadTf2, footTf2, animator2),
-                freeLookCamera, freeLookCameraTf,
+                new(figure1, figureTf1, figureRb1, headTf1, aboveHeadTf1, footTf1, stackRoot1, animator1),
+                new(figure2, figureTf2, figureRb2, headTf2, aboveHeadTf2, footTf2, stackRoot2, animator2),
+                freeLookCamera, freeLookCameraTf, stackStartPoint,
+                staminaBackSr, staminaGaugeTf, staminaGaugeSr,
                 initPlaceTf, stageBorder
                 );
         }
@@ -55,6 +64,16 @@ namespace Main.Player
         {
             impl.Update();
         }
+
+        internal float CalcSqrMagnitude(Vector3 pos)
+        {
+            return impl.CalcSqrMagnitude(pos);
+        }
+
+        internal bool IsFoxFigure()
+        {
+            return impl.IsFoxFigure();
+        }
     }
 
     internal sealed class PlayerMoveBhv : System.IDisposable
@@ -67,11 +86,11 @@ namespace Main.Player
 
         private readonly PlayerFigure figure1;
         private readonly PlayerFigure figure2;
+        private readonly PlayerStamina playerStamina;
         private Cinemachine.CinemachineFreeLook freeLookCamera;
         private Transform freeLookCameraTf;
+        private Transform stackStartPoint;
         private Border.Border stageBorder;
-
-        private readonly PlayerStamina playerStamina;
 
         private FigureIndex figureIndex = FigureIndex.Fox;  // 形態のインデックス番号
         private float moveSpeed = SO_Player.Entity.NormalSpeed;  // 移動スピード
@@ -84,13 +103,15 @@ namespace Main.Player
         private bool isInitPositionChecked = false;  // initPositionが有効な値かどうか、確認したフラグ
 
         public PlayerMoveBhv(PlayerFigure figure1, PlayerFigure figure2,
-            Cinemachine.CinemachineFreeLook freeLookCamera, Transform freeLookCameraTf,
+            Cinemachine.CinemachineFreeLook freeLookCamera, Transform freeLookCameraTf, Transform stackStartPoint,
+            SpriteRenderer staminaBackSr, Transform staminaGaugeTf, SpriteRenderer staminaGaugeSr,
             Transform initPlaceTf, Border.Border stageBorder)
         {
             this.figure1 = figure1;
             this.figure2 = figure2;
             this.freeLookCamera = freeLookCamera;
             this.freeLookCameraTf = freeLookCameraTf;
+            this.stackStartPoint = stackStartPoint;
             initPosition = initPlaceTf.position;
             prePosition = initPosition;
             this.stageBorder = stageBorder;
@@ -98,17 +119,20 @@ namespace Main.Player
             figure1.FigureTf.position = initPosition;
             figure2.FigureTf.position = initPosition;
 
-            playerStamina = new();
+            playerStamina = new(staminaBackSr, staminaGaugeTf, staminaGaugeSr);
 
             ChangeFigure(FigureIndex.Human, FigureIndex.Fox);
+            UpdateStackStartPointBhv();
         }
 
         public void Dispose()
         {
             figure1.Dispose();
             figure2.Dispose();
+            playerStamina.Dispose();
             freeLookCamera = null;
             freeLookCameraTf = null;
+            stackStartPoint = null;
             stageBorder = null;
         }
 
@@ -118,6 +142,7 @@ namespace Main.Player
             if (figure2.IsNullExist()) return;
             if (!freeLookCamera) return;
             if (!freeLookCameraTf) return;
+            if (!stackStartPoint) return;
             if (!stageBorder) return;
 
             if (!isInitPositionChecked)
@@ -140,8 +165,11 @@ namespace Main.Player
 
             // 特殊行動
             ChargeBhv();
-            GetItemBhv();
-            TradeBhv();
+            GetItemBhv();  // 中身なし
+            TradeBhv();  // 中身なし
+
+            // 積み上げる場所を更新
+            UpdateStackStartPointBhv();
         }
 
         // 引数以外のインデックスをすべて取得
@@ -164,6 +192,16 @@ namespace Main.Player
                 FigureIndex.Human => figure2,
                 _ => throw new System.Exception("無効なインデックス番号です")
             };
+        }
+
+        internal float CalcSqrMagnitude(Vector3 pos)
+        {
+            return (GetFigure(figureIndex).FigureTf.position - pos).sqrMagnitude;
+        }
+
+        internal bool IsFoxFigure()
+        {
+            return figureIndex == FigureIndex.Fox;
         }
 
         // oldIからnewIに形態変化
@@ -214,6 +252,12 @@ namespace Main.Player
             };
 
             action();
+        }
+
+        // 積み上げる場所を更新する
+        private void UpdateStackStartPointBhv()
+        {
+            stackStartPoint.position = GetFigure(figureIndex).StackRoot.position;
         }
 
         // 慣性を消す(Rigidbodyの速度の、xとzを0にする)
@@ -326,10 +370,11 @@ namespace Main.Player
         public Transform HeadTf { get; private set; }
         public Transform AboveHeadTf { get; private set; }
         public Transform FootTf { get; private set; }
+        public Transform StackRoot { get; private set; }
         public Animator Animator { get; private set; }
 
         public PlayerFigure(GameObject figure, Transform figureTf, Rigidbody figureRb,
-            Transform headTf, Transform aboveHeadTf, Transform footTf, Animator animator)
+            Transform headTf, Transform aboveHeadTf, Transform footTf, Transform stackRoot, Animator animator)
         {
             this.Figure = figure;
             this.FigureTf = figureTf;
@@ -337,6 +382,7 @@ namespace Main.Player
             this.HeadTf = headTf;
             this.AboveHeadTf = aboveHeadTf;
             this.FootTf = footTf;
+            this.StackRoot = stackRoot;
             this.Animator = animator;
         }
 
@@ -348,6 +394,7 @@ namespace Main.Player
             HeadTf = null;
             AboveHeadTf = null;
             FootTf = null;
+            StackRoot = null;
             Animator = null;
         }
 
@@ -359,13 +406,14 @@ namespace Main.Player
             if (!HeadTf) return true;
             if (!AboveHeadTf) return true;
             if (!FootTf) return true;
+            if (!StackRoot) return true;
             if (!Animator) return true;
 
             return false;
         }
     }
 
-    internal sealed class PlayerStamina
+    internal sealed class PlayerStamina : System.IDisposable
     {
         private int _stamina = 0;
         private int stamina
@@ -374,35 +422,93 @@ namespace Main.Player
             set { _stamina = Mathf.Clamp(value, 0, SO_Player.Entity.MaxStamina); }
         }
 
-        public PlayerStamina()
+        private SpriteRenderer backSr;
+        private Transform gaugeTf;
+        private SpriteRenderer gaugeSr;
+
+        internal PlayerStamina(SpriteRenderer backSr, Transform gaugeTf, SpriteRenderer gaugeSr)
         {
+            this.backSr = backSr;
+            this.gaugeTf = gaugeTf;
+            this.gaugeSr = gaugeSr;
+
             stamina = SO_Player.Entity.MaxStamina;
         }
 
-        // スタミナを増やす。この処理でスタミナが最大に「なった」時のみ、trueを返す。
-        public bool IncreaseStamina(int diff)
+        public void Dispose()
         {
+            backSr = null;
+            gaugeTf = null;
+            gaugeSr = null;
+        }
+
+        // スタミナを増やす。この処理でスタミナが最大に「なった」時のみ、trueを返す。
+        internal bool IncreaseStamina(int diff)
+        {
+            if (!backSr) return false;
+            if (!gaugeTf) return false;
+            if (!gaugeSr) return false;
+
             if (diff <= 0) throw new System.Exception("diffは正である必要があります");
             if (stamina == SO_Player.Entity.MaxStamina) return false;
 
             stamina += diff;
+
+            UpdateGauge();
+
             return IsStaminaFull();
         }
 
         // スタミナを減らす。この処理でスタミナが最小に「なった」時のみ、trueを返す。
-        public bool DecreaseStamina(int diff)
+        internal bool DecreaseStamina(int diff)
         {
+            if (!backSr) return false;
+            if (!gaugeTf) return false;
+            if (!gaugeSr) return false;
+
             if (diff <= 0) throw new System.Exception("diffは正である必要があります");
             if (stamina == 0) return false;
 
             stamina -= diff;
+
+            UpdateGauge();
+
             return IsStaminaZero();
         }
 
+        // ゲージのスケールと色を更新する
+        private void UpdateGauge()
+        {
+            if (IsStaminaFull())
+            {
+                backSr.enabled = false;
+                gaugeSr.enabled = false;
+
+                return;
+            }
+
+            backSr.enabled = true;
+            gaugeSr.enabled = true;
+
+            float p = 1.0f * stamina / SO_Player.Entity.MaxStamina;
+            gaugeTf.localScale = new(Ex.Remap(1, 0, 1, 0, p), 1, 1);
+            gaugeSr.color = new(1, Ex.Remap(1, 0, 1, 0, p), 0, 1);
+        }
+
         // スタミナが最大ならtrue、そうでないならfalse。
-        public bool IsStaminaFull() { return stamina == SO_Player.Entity.MaxStamina; }
+        internal bool IsStaminaFull() { return stamina == SO_Player.Entity.MaxStamina; }
 
         // スタミナが最小ならtrue、そうでないならfalse。
-        public bool IsStaminaZero() { return stamina == 0; }
+        internal bool IsStaminaZero() { return stamina == 0; }
+    }
+
+    internal static class Ex
+    {
+        // 区間X[a, b]を、区間Y[c, d]に線形マッピングしたとする。区間X内の値xについて、変換後の区間Yにおける値yを返す。
+        internal static float Remap(float a, float b, float c, float d, float x)
+        {
+            float y = (x - a) * (d - c) / (b - a) + c;
+            return y;
+        }
     }
 }

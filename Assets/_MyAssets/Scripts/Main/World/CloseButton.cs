@@ -14,7 +14,7 @@ namespace Main.UI
         {
             tagSO = SO_Tag.Entity;
             Button closeButton = GetComponent<Button>();
-            PlayerCollect playerCollect = GameObject.FindGameObjectWithTag(tagSO.PlayerTag).transform.Find("Figures/Figure_1").GetComponent<PlayerCollect>();
+            PlayerCollect playerCollect = GameObject.FindGameObjectWithTag(tagSO.PlayerTag).transform.Find("PlayerCollect").GetComponent<PlayerCollect>();
             closeButton.onClick.AddListener(playerCollect.OnIneractFalse);
         }
     }
