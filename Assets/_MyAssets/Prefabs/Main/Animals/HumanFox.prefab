@@ -31,6 +31,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3873338907317210469}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &221145974418786711
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6222270254167548064}
+  m_Layer: 0
+  m_Name: StaminaGaugeRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6222270254167548064
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 221145974418786711}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.5, y: 4.6, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3873338907317210469}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2628066144876103823
 GameObject:
   m_ObjectHideFlags: 0
@@ -190,7 +221,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 83876f93c378fe8489a0d6bcc755ba0e,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -207,6 +238,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 3875416062683856934}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 83876f93c378fe8489a0d6bcc755ba0e,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6222270254167548064}
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 83876f93c378fe8489a0d6bcc755ba0e,
         type: 3}
       insertIndex: -1

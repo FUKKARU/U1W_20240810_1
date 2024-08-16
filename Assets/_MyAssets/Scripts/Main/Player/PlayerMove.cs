@@ -14,6 +14,7 @@ namespace Main.Player
         [SerializeField] private Transform headTf1;
         [SerializeField] private Transform aboveHeadTf1;
         [SerializeField] private Transform footTf1;
+        [SerializeField] private Transform staminaGaugeRoot1;
         [SerializeField] private Transform stackRoot1;
         [SerializeField] private Animator animator1;
         [Space(25)]
@@ -24,6 +25,7 @@ namespace Main.Player
         [SerializeField] private Transform headTf2;
         [SerializeField] private Transform aboveHeadTf2;
         [SerializeField] private Transform footTf2;
+        [SerializeField] private Transform staminaGaugeRoot2;
         [SerializeField] private Transform stackRoot2;
         [SerializeField] private Animator animator2;
         [Space(25)]
@@ -32,7 +34,7 @@ namespace Main.Player
         [Space(25)]
         [SerializeField] private Transform stackStartPoint;
         [Space(25)]
-        [SerializeField] private SpriteRenderer staminaBackSr;
+        [SerializeField] private Transform staminaGaugeParentTf;
         [SerializeField] private Transform staminaGaugeTf;
         [SerializeField] private SpriteRenderer staminaGaugeSr;
         [Space(25)]
@@ -46,10 +48,12 @@ namespace Main.Player
             if (!stageBorder) throw new System.Exception($"{nameof(stageBorder)}が設定されていません");
 
             impl = new(
-                new(figure1, figureTf1, figureRb1, headTf1, aboveHeadTf1, footTf1, stackRoot1, animator1),
-                new(figure2, figureTf2, figureRb2, headTf2, aboveHeadTf2, footTf2, stackRoot2, animator2),
+                new(figure1, figureTf1, figureRb1, headTf1, aboveHeadTf1, footTf1,
+                staminaGaugeRoot1, stackRoot1, animator1),
+                new(figure2, figureTf2, figureRb2, headTf2, aboveHeadTf2, footTf2,
+                staminaGaugeRoot1, stackRoot2, animator2),
                 freeLookCamera, freeLookCameraTf, stackStartPoint,
-                staminaBackSr, staminaGaugeTf, staminaGaugeSr,
+                staminaGaugeParentTf, staminaGaugeTf, staminaGaugeSr,
                 initPlaceTf, stageBorder
                 );
         }
@@ -104,7 +108,7 @@ namespace Main.Player
 
         public PlayerMoveBhv(PlayerFigure figure1, PlayerFigure figure2,
             Cinemachine.CinemachineFreeLook freeLookCamera, Transform freeLookCameraTf, Transform stackStartPoint,
-            SpriteRenderer staminaBackSr, Transform staminaGaugeTf, SpriteRenderer staminaGaugeSr,
+            Transform staminaGaugeParentTf, Transform staminaGaugeTf, SpriteRenderer staminaGaugeSr,
             Transform initPlaceTf, Border.Border stageBorder)
         {
             this.figure1 = figure1;
@@ -119,10 +123,10 @@ namespace Main.Player
             figure1.FigureTf.position = initPosition;
             figure2.FigureTf.position = initPosition;
 
-            playerStamina = new(staminaBackSr, staminaGaugeTf, staminaGaugeSr);
+            playerStamina = new(staminaGaugeParentTf, staminaGaugeTf, staminaGaugeSr);
 
             ChangeFigure(FigureIndex.Human, FigureIndex.Fox);
-            UpdateStackStartPointBhv();
+            SetStaminaGaugeParentBhv();
         }
 
         public void Dispose()
@@ -167,6 +171,9 @@ namespace Main.Player
             ChargeBhv();
             GetItemBhv();  // 中身なし
             TradeBhv();  // 中身なし
+
+            // スタミナゲージの親を更新
+            SetStaminaGaugeParentBhv();
 
             // 積み上げる場所を更新
             UpdateStackStartPointBhv();
@@ -360,6 +367,13 @@ namespace Main.Player
         {
             if (figureIndex != FigureIndex.Human) return;
         }
+
+        // スタミナゲージの親を更新する
+        private void SetStaminaGaugeParentBhv()
+        {
+            PlayerFigure fgr = GetFigure(figureIndex);
+            playerStamina.SetGaugeParent(fgr.FigureTf, fgr.StaminaGaugeRoot.localPosition);
+        }
     }
 
     internal sealed class PlayerFigure : System.IDisposable
@@ -370,11 +384,13 @@ namespace Main.Player
         public Transform HeadTf { get; private set; }
         public Transform AboveHeadTf { get; private set; }
         public Transform FootTf { get; private set; }
+        public Transform StaminaGaugeRoot { get; private set; }
         public Transform StackRoot { get; private set; }
         public Animator Animator { get; private set; }
 
         public PlayerFigure(GameObject figure, Transform figureTf, Rigidbody figureRb,
-            Transform headTf, Transform aboveHeadTf, Transform footTf, Transform stackRoot, Animator animator)
+            Transform headTf, Transform aboveHeadTf, Transform footTf,
+            Transform staminaGaugeRoot, Transform stackRoot, Animator animator)
         {
             this.Figure = figure;
             this.FigureTf = figureTf;
@@ -382,6 +398,7 @@ namespace Main.Player
             this.HeadTf = headTf;
             this.AboveHeadTf = aboveHeadTf;
             this.FootTf = footTf;
+            this.StaminaGaugeRoot = staminaGaugeRoot;
             this.StackRoot = stackRoot;
             this.Animator = animator;
         }
@@ -394,6 +411,7 @@ namespace Main.Player
             HeadTf = null;
             AboveHeadTf = null;
             FootTf = null;
+            StaminaGaugeRoot = null;
             StackRoot = null;
             Animator = null;
         }
@@ -406,6 +424,7 @@ namespace Main.Player
             if (!HeadTf) return true;
             if (!AboveHeadTf) return true;
             if (!FootTf) return true;
+            if (!StaminaGaugeRoot) return true;
             if (!StackRoot) return true;
             if (!Animator) return true;
 
@@ -421,14 +440,13 @@ namespace Main.Player
             get { return _stamina; }
             set { _stamina = Mathf.Clamp(value, 0, SO_Player.Entity.MaxStamina); }
         }
-
-        private SpriteRenderer backSr;
+        private Transform gaugeParentTf;
         private Transform gaugeTf;
         private SpriteRenderer gaugeSr;
 
-        internal PlayerStamina(SpriteRenderer backSr, Transform gaugeTf, SpriteRenderer gaugeSr)
+        internal PlayerStamina(Transform gaugeParentTf, Transform gaugeTf, SpriteRenderer gaugeSr)
         {
-            this.backSr = backSr;
+            this.gaugeParentTf = gaugeParentTf;
             this.gaugeTf = gaugeTf;
             this.gaugeSr = gaugeSr;
 
@@ -437,7 +455,7 @@ namespace Main.Player
 
         public void Dispose()
         {
-            backSr = null;
+            gaugeParentTf = null;
             gaugeTf = null;
             gaugeSr = null;
         }
@@ -445,7 +463,7 @@ namespace Main.Player
         // スタミナを増やす。この処理でスタミナが最大に「なった」時のみ、trueを返す。
         internal bool IncreaseStamina(int diff)
         {
-            if (!backSr) return false;
+            if (!gaugeParentTf) return false;
             if (!gaugeTf) return false;
             if (!gaugeSr) return false;
 
@@ -462,7 +480,7 @@ namespace Main.Player
         // スタミナを減らす。この処理でスタミナが最小に「なった」時のみ、trueを返す。
         internal bool DecreaseStamina(int diff)
         {
-            if (!backSr) return false;
+            if (!gaugeParentTf) return false;
             if (!gaugeTf) return false;
             if (!gaugeSr) return false;
 
@@ -479,20 +497,30 @@ namespace Main.Player
         // ゲージのスケールと色を更新する
         private void UpdateGauge()
         {
-            if (IsStaminaFull())
-            {
-                backSr.enabled = false;
-                gaugeSr.enabled = false;
+            if (!gaugeTf) return;
+            if (!gaugeSr) return;
 
-                return;
-            }
+            if (IsStaminaFull()) { gaugeSr.enabled = false; return; }
 
-            backSr.enabled = true;
             gaugeSr.enabled = true;
 
             float p = 1.0f * stamina / SO_Player.Entity.MaxStamina;
             gaugeTf.localScale = new(Ex.Remap(1, 0, 1, 0, p), 1, 1);
+            gaugeTf.localPosition = Vector3.zero;
+            gaugeTf.localPosition = new(Ex.Remap(1, 0, 0, -1.2f, p), 0, 0);
             gaugeSr.color = new(1, Ex.Remap(1, 0, 1, 0, p), 0, 1);
+        }
+
+        internal void SetGaugeParent(Transform parentTf, Vector3 localPosition)
+        {
+            gaugeParentTf.parent = parentTf;
+            gaugeParentTf.localPosition = localPosition;
+        }
+
+        internal void ResetGaugeParent()
+        {
+            gaugeParentTf.parent = null;
+            gaugeParentTf.localPosition = Vector3.zero;
         }
 
         // スタミナが最大ならtrue、そうでないならfalse。
