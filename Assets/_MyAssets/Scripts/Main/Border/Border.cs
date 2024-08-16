@@ -11,91 +11,98 @@ namespace Main.Border
         [Space(25)]
         [SerializeField, Header("LineRendererコンポーネントをアクティブにする")] private bool isLineRendererActive;
         [SerializeField, Header("線の太さ")] private float thin;
+        [SerializeField, Header("線のマテリアル")] private Material material;
+        [SerializeField, Header("線の色")] private Color color;
 
-        private List<Transform> pinList = new();
+        private readonly List<Transform> pinList = new();
 
-#if UNITY_EDITOR
+        private enum State
+        {
+            Editor_Editing,
+            Editor_Playing,
+            Build
+        }
+
         private void OnEnable()
         {
-            if (IsPlaying())
+            System.Action action = GetState() switch
             {
-                if (!pins) throw new System.Exception($"{nameof(pins)}が設定されていません");
-                if (!lineRenderer) throw new System.Exception($"{nameof(lineRenderer)}が設定されていません");
-
-                if (isLineRendererActive) Debug.LogWarning($"{nameof(lineRenderer)}がアクティブです");
-
-                UpdatePins(isLineRendererActive);
-            }
-            else
-            {
-
-            }
+                State.Editor_Editing => () => General.Ex.Pass(),
+                State.Editor_Playing => () => UpdatePins(),
+                State.Build => () => UpdatePins(),
+                _ => throw new System.Exception("無効な値です")
+            };
+            action();
         }
 
         private void OnDisable()
         {
-            if (IsPlaying())
+            System.Action action = GetState() switch
             {
-                pinList = null;
-                pins = null;
-                lineRenderer = null;
-            }
-            else
-            {
-
-            }
+                State.Editor_Editing => () => General.Ex.Pass(),
+                State.Editor_Playing => () => Dispose(),
+                State.Build => () => Dispose(),
+                _ => throw new System.Exception("無効な値です")
+            };
+            action();
         }
 
         private void Update()
         {
-            if (IsPlaying())
+            System.Action action = GetState() switch
             {
-
-            }
-            else
-            {
-                if (!pins) throw new System.Exception($"{nameof(pins)}が設定されていません");
-                if (!lineRenderer) throw new System.Exception($"{nameof(lineRenderer)}が設定されていません");
-
-                UpdatePins(isLineRendererActive);
-            }
+                State.Editor_Editing => () => UpdatePins(),
+                State.Editor_Playing => () => General.Ex.Pass(),
+                State.Build => () => General.Ex.Pass(),
+                _ => throw new System.Exception("無効な値です")
+            };
+            action();
         }
-#else
-        private void OnEnable()
+
+        private State GetState()
         {
+#if UNITY_EDITOR
+            if (UnityEditor.EditorApplication.isPlaying) return State.Editor_Playing;
+            else return State.Editor_Editing;
+#else
+            return State.Build;
+#endif
+        }
+
+        private void Dispose()
+        {
+            // 明示的null代入
+            pins = null;
+            lineRenderer = null;
+            material = null;
+        }
+
+        private void UpdatePins()
+        {
+            // nullチェック
             if (!pins) throw new System.Exception($"{nameof(pins)}が設定されていません");
             if (!lineRenderer) throw new System.Exception($"{nameof(lineRenderer)}が設定されていません");
 
-            UpdatePins(false);
-        }
+            // ビルドデータなら、強制非アクティブにする！
+            bool active = (GetState() == State.Build) ? false : isActiveAndEnabled;
 
-        private void OnDisable()
-        {
-            pinList = null;
-            pins = null;
-            lineRenderer = null;
-        }
+            // エディタで実行中だけど、アクティブになっているよ？いいの？
+            if (GetState() == State.Editor_Playing && active)
+                Debug.LogWarning($"{nameof(lineRenderer)}がアクティブです");
 
-        private void Update()
-        {
-
-        }
-#endif
-
-#if UNITY_EDITOR
-        private bool IsPlaying()
-        {
-            return UnityEditor.EditorApplication.isPlaying;
-        }
-#endif
-
-        private void UpdatePins(bool _isLineRendererActive)
-        {
-            lineRenderer.enabled = _isLineRendererActive;
+            // ここで実際に、アクティブ状態を設定
+            lineRenderer.enabled = active;
             foreach (Transform e in pins)
-                e.gameObject.SetActive(_isLineRendererActive);
+                e.gameObject.SetActive(active);
 
-            if (!_isLineRendererActive) return;
+            // 非アクティブなら、ここから先はやらなくていい
+            if (!active) return;
+
+            // マテリアルと色設定
+            Material mat = new(material) { color = color };
+            lineRenderer.sharedMaterial = mat;
+
+            // 線を描画させる
 
             int pinNum = pins.childCount;
 
@@ -103,7 +110,7 @@ namespace Main.Border
             lineRenderer.endWidth = thin;
             lineRenderer.positionCount = pinNum + 1;
 
-            pinList = new();
+            pinList.Clear();
             for (int i = 0; i < pinNum; i++)
                 pinList.Add(pins.GetChild(i));
 
@@ -117,22 +124,25 @@ namespace Main.Border
         /// </summary>
         internal bool IsIn(Vector2 pos)
         {
-            if (pinList == null) return false;
-            if (pinList.Count <= 2) return false;
+            if (pinList == null) throw new System.Exception($"{pinList}がnullです");
+            if (pinList.Count <= 2) throw new System.Exception($"{pinList}の要素の数が2つ以下です");
 
+            float th = 0;
             for (int i = 0; i < pinList.Count; i++)
             {
-                Vector2 from = pinList[i].position.XOZ2XY();
-                Vector2 to = ((i < pinList.Count - 1) ? pinList[i + 1].position : pinList[0].position).XOZ2XY();
+                Vector2 fromPinPos = pinList[i].position.XOZ2XY();
+                Vector2 toPinPos = ((i < pinList.Count - 1) ? pinList[i + 1].position : pinList[0].position).XOZ2XY();
 
-                Vector2 axisBase = to - from;
-                Vector2 axisTarget = pos - from;
+                Vector2 fromVec = fromPinPos - pos;
+                Vector2 toVec = toPinPos - pos;
 
-                if ((axisBase, axisTarget).Cross() > 0)
-                    return false;
+                float dth = Mathf.Acos(Vector2.Dot(toVec.normalized, fromVec.normalized));  // 回転角の絶対値、[0, π]
+                if ((fromVec, toVec).Cross() < 0) dth *= -1;
+
+                th += dth;
             }
 
-            return true;
+            return Mathf.Abs(th) >= 0.01f;
         }
 
         /// <summary>

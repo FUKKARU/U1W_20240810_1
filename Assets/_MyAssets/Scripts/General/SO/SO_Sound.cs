@@ -30,16 +30,29 @@ namespace SO
         }
         #endregion
 
-        [Header("AudioMixer")] public AudioMixer AudioMixer;
-        [Header("MasterのAudioMixerGroup")] public AudioMixerGroup AMGroupMaster;
-        [Header("BGMのAudioMixerGroup")] public AudioMixerGroup AMGroupBGM;
-        [Header("SEのAudioMixerGroup")] public AudioMixerGroup AMGroupSE;
-        [Space(50)]
+        [SerializeField, Header("AudioMixer")] private AudioMixer _audioMixer;
+        public AudioMixer AudioMixer => _audioMixer;
+
+        [SerializeField, Header("AudioMixerGroup\n1.Master\n2.BGM\n3.SE")] private List<AudioMixerGroup> _audioMixerGroupList;
+        public AudioMixerGroup MasterAMGroup => _audioMixerGroupList[0];
+        public AudioMixerGroup BGMAMGroup => _audioMixerGroupList[1];
+        public AudioMixerGroup SEAMGroup => _audioMixerGroupList[2];
+
+        [Space(25)]
         [Header("BGM")]
-        [Header("タイトル")] public AudioClip TitleBGM;
-        [Header("ゲーム内")] public AudioClip MainBGM;
-        [Space(50)]
+
+        [SerializeField, Header("タイトル")] private AudioClip _titleBGM;
+        public AudioClip TitleBGM => _titleBGM;
+
+        [SerializeField, Header("ゲーム内\n1.神社\n2.森林\n3.村落")] private List<AudioClip> _mainBGMList;
+        public AudioClip MainShrineBGM => _mainBGMList[0];
+        public AudioClip MainForestBGM => _mainBGMList[1];
+        public AudioClip MainVillageBGM => _mainBGMList[2];
+
+        [Space(25)]
         [Header("SE")]
-        [Header("テスト1")] public AudioClip Test1SE;
+
+        [SerializeField, Header("ボタンのクリック")] private AudioClip _buttonClickSE;
+        public AudioClip ButtonClickSE => _buttonClickSE;
     }
 }

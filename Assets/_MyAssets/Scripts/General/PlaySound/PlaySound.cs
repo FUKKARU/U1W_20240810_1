@@ -14,14 +14,14 @@ namespace General
             if (sType == SType.BGM)
             {
                 source.clip = clip;
-                source.outputAudioMixerGroup = SO_Sound.Entity.AMGroupBGM;
+                source.outputAudioMixerGroup = SO_Sound.Entity.BGMAMGroup;
                 source.playOnAwake = true;
                 source.loop = true;
                 source.Play();
             }
             else
             {
-                source.outputAudioMixerGroup = SO_Sound.Entity.AMGroupSE;
+                source.outputAudioMixerGroup = SO_Sound.Entity.SEAMGroup;
                 source.playOnAwake = true;
                 source.loop = false;
                 source.PlayOneShot(clip);
