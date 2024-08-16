@@ -18,11 +18,19 @@ MonoBehaviour:
   y1: 50
   spawnObjs:
   - name: Kinoko
-    spawnObj: {fileID: 919132149155446097, guid: 2fb2cd0950e7a5746b6e8c64642ba6dd,
+    objdata: {fileID: 1998662823781093078, guid: 28092484227f8ba44ab10133bd90b35a,
       type: 3}
     createOffsetTime: 1
   - name: Apple
-    spawnObj: {fileID: 1853025658139187464, guid: cd1cc05ba32aadc48a1d7faabbd170bc,
+    objdata: {fileID: 1853025658139187464, guid: cd1cc05ba32aadc48a1d7faabbd170bc,
       type: 3}
     createOffsetTime: 1
+  - name: Aburaage
+    objdata: {fileID: 5995468831913062942, guid: a8120733b4bd56a468fd64c2df635d8c,
+      type: 3}
+    createOffsetTime: 0
   maxKinokoNum: 40
+  showKinokoRange: 1
+  applePos1: applePos1
+  applePos2: applePos2
+  applePos3: applePos3

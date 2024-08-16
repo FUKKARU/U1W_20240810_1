@@ -45,6 +45,18 @@ namespace SO
         [SerializeField, Header("キノコの最大数")] int maxKinokoNum;
         public int ＭaxKinokoNum => maxKinokoNum;
 
+        [SerializeField, Header("キノコの生成範囲を描画するか")] bool showKinokoRange;
+        public bool ShowKinokoRange => showKinokoRange;
+
+        [SerializeField, Header("リンゴが実る場所１の名前")] string applePos1;
+        public string ApplePos1 => applePos1;
+
+        [SerializeField, Header("リンゴが実る場所2の名前")] string applePos2;
+        public string ApplePos2 => applePos2;
+
+        [SerializeField, Header("リンゴが実る場所3の名前")] string applePos3;
+        public string ApplePos3 => applePos3;
+
         /// <summary>
         /// メンバ変数の名前からインスタンスを取得
         /// </summary>
@@ -69,7 +81,7 @@ namespace SO
 public class SpawnObj
 {
     public string name;
-    public GameObject spawnObj;
+    public GameObject objdata;
     public  float createOffsetTime;
 }
 

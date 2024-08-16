@@ -1,3 +1,4 @@
+using SO;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,13 +13,16 @@ namespace Main.Apple
         [NonSerialized] public bool apple1Created = false;
         [NonSerialized] public bool apple2Created = false;
         [NonSerialized] public bool apple3Created = false;
-
-
+        SO_Spawner spawnerSO;
+        private void Awake()
+        {
+            spawnerSO = SO_Spawner.Entity;
+        }
         public void FreeApple()
         {
             if (apple1Created)
             {
-                GameObject apple = transform.Find("applePos1").GetChild(0).gameObject;
+                GameObject apple = transform.Find(spawnerSO.ApplePos1).GetChild(0).gameObject;
                 apple.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
                 apple.transform.parent = null;
                 apple.GetComponent<SphereCollider>().enabled = true;
@@ -30,7 +34,7 @@ namespace Main.Apple
 
             if (apple2Created)
             {
-                GameObject apple = transform.Find("applePos2").GetChild(0).gameObject;
+                GameObject apple = transform.Find(spawnerSO.ApplePos2).GetChild(0).gameObject;
                 apple.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
                 apple.transform.parent = null;
                 apple.GetComponent<SphereCollider>().enabled = true;
@@ -42,7 +46,7 @@ namespace Main.Apple
 
             if (apple3Created)
             {
-                GameObject apple = transform.Find("applePos3").GetChild(0).gameObject;
+                GameObject apple = transform.Find(spawnerSO.ApplePos3).GetChild(0).gameObject;
                 apple.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
                 apple.transform.parent = null;
                 apple.GetComponent<SphereCollider>().enabled = true;

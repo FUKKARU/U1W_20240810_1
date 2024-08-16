@@ -2,26 +2,34 @@ using SO;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Main.Spawn
 {
+    [RequireComponent(typeof(LineRenderer))]
     public class SpawnItem : MonoBehaviour
     {
         SO_Spawner spawnerSO;
+        SO_Tag tagSO;
+        public static SpawnItem Instance { get; set; } = null;
 
-        [SerializeField, Header("リンゴの木")]
-        List<GameObject> appleTrees = new List<GameObject>();
-        public int appleCreatedNum { get; private set; } = 0;
-        const byte maxApplePerTree = 3;
-        [SerializeField, Header("スポーンして良い範囲")] List<GameObject> SpawnRange;
+        [NonSerialized] public List<GameObject> spawnRange = new List<GameObject>();
+        LineRenderer lineRenderer;
+        SO_Spawner spawner;
+
         public int kinokoCreatedNum { get; private set; } = 0;
         List<Vector2> spawnRangeVector;
         SpawnObj kinokoInstance;
+
+
+        List<GameObject> appleTrees = new List<GameObject>();
+        public int appleCreatedNum { get; private set; } = 0;
+        const byte maxApplePerTree = 3;
         SpawnObj appleInstance;
-        public static SpawnItem Instance { get; set; } = null;
+        
         void Awake()
         {
 
@@ -34,20 +42,33 @@ namespace Main.Spawn
                 Destroy(gameObject);
             }
             spawnerSO = SO_Spawner.Entity;
+            tagSO = SO_Tag.Entity;
             spawnRangeVector = new List<Vector2>();
-            foreach (GameObject obj in SpawnRange)
-            {
-                Vector2 position = new Vector2(obj.transform.position.x, obj.transform.position.z);
-                spawnRangeVector.Add(position);
-            }
+            spawnRange.AddRange(GameObject.FindGameObjectsWithTag(tagSO.SpawnRangeTag));
+            spawnRange = spawnRange.OrderBy(go => int.Parse(go.name.Split('_').Last())).ToList();
+            appleTrees.AddRange(GameObject.FindGameObjectsWithTag(tagSO.TreeTag));
+            lineRenderer = GetComponent<LineRenderer>();
+            lineRenderer.startWidth = 0.3f;
+            lineRenderer.endWidth = 0.3f;
+            lineRenderer.startColor = Color.red;
+            lineRenderer.endColor = Color.red;
+            lineRenderer.positionCount = spawnRange.Count + 1;
         }
         void Start()
         {
+            CreatePoints();
             kinokoInstance = spawnerSO.GetInstanceByName("Kinoko");
             appleInstance = spawnerSO.GetInstanceByName("Apple");
-            //StartCoroutine(CreateKinoko());
+            StartCoroutine(CreateKinoko());
             StartCoroutine(CreateApple());
         }
+        void Update()
+        {
+            DrawSpawnRange();
+        }
+
+        #region kinoko
+        //キノコ生成
         IEnumerator CreateKinoko()
         {
             Vector2 spawnPos;
@@ -60,11 +81,22 @@ namespace Main.Spawn
             } while (CheckSpawnPoint(spawnPos) == false);
             kinokoCreatedNum++;
             Quaternion rot = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
-            Instantiate(kinokoInstance.spawnObj, new Vector3(spawnPos.x, 0, spawnPos.y), rot);
+            Instantiate(kinokoInstance.objdata, new Vector3(spawnPos.x, 0, spawnPos.y), rot);
             END_KINOKO:
             yield return new WaitForSeconds(kinokoInstance.createOffsetTime);
             StartCoroutine(CreateKinoko());
         }
+        //キノコの生成可能範囲生成
+        void CreatePoints()
+        {
+            spawnRangeVector.Clear();
+            foreach (GameObject obj in spawnRange)
+            {
+                Vector2 position = new Vector2(obj.transform.position.x, obj.transform.position.z);
+                spawnRangeVector.Add(position);
+            }
+        }
+        //キノコの生成可能範囲に入っているかチェック
         bool CheckSpawnPoint(Vector2 spawnPoint)
         {
             int boundaryPointsCount = spawnRangeVector.Count;
@@ -99,6 +131,24 @@ namespace Main.Spawn
             }
             return ((int)windingNum % 2) != 0;
         }
+        //生成可能範囲を描画
+        void DrawSpawnRange()
+        {
+            for (int i = 0; i < spawnRange.Count; i++)
+            {
+                lineRenderer.SetPosition(i, spawnRange[i].transform.position);
+            }
+            lineRenderer.SetPosition(spawnRange.Count, spawnRange[0].transform.position);
+        }
+        //プレイヤーがキノコを取得した際
+        public void KinokoNumDec()
+        {
+            kinokoCreatedNum--;
+        }
+        #endregion
+
+        #region apple
+        //リンゴ生成
         IEnumerator CreateApple()
         {
             bool created = false;
@@ -116,7 +166,7 @@ namespace Main.Spawn
                     switch (createPosIndex)
                     {
                         case 1:
-                            appleName = "applePos1";
+                            appleName = spawnerSO.ApplePos1;
                             if (!appleTreeComponent.apple1Created)
                             {
                                 appleTreeComponent.apple1Created = true;
@@ -124,7 +174,7 @@ namespace Main.Spawn
                             }
                             break;
                         case 2:
-                            appleName = "applePos2";
+                            appleName = spawnerSO.ApplePos2;
                             if (!appleTreeComponent.apple2Created)
                             {
                                 appleTreeComponent.apple2Created = true;
@@ -132,7 +182,7 @@ namespace Main.Spawn
                             }
                             break;
                         case 3:
-                            appleName = "applePos3";
+                            appleName = spawnerSO.ApplePos3;
                             if (!appleTreeComponent.apple3Created)
                             {
                                 appleTreeComponent.apple3Created = true;
@@ -147,7 +197,7 @@ namespace Main.Spawn
                     if (created)
                     {
                         Vector3 eulerRot = new Vector3(0, Random.Range(0.0f, 360.0f), 0);
-                        Instantiate(appleInstance.spawnObj, appleTree.transform.Find(appleName)).transform.localEulerAngles = eulerRot;
+                        Instantiate(appleInstance.objdata, appleTree.transform.Find(appleName)).transform.localEulerAngles = eulerRot;
                         appleCreatedNum++;
                         appleTreeComponent.appleNum++;
                     }
@@ -158,15 +208,12 @@ namespace Main.Spawn
             yield return new WaitForSeconds(appleInstance.createOffsetTime);
             StartCoroutine(CreateApple());
         }
-        public void KinokoNumDec()
-        {
-            kinokoCreatedNum--;
-        }
+        //プレイヤーがリンゴを取得した際
         public void AppleNumDec(int num)
         {
             appleCreatedNum -= num;
         }
-
+        #endregion
     }
 }
 
