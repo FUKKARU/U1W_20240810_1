@@ -19,3 +19,5 @@ MonoBehaviour:
   kinokoTag: Item/Kinoko
   spawnRangeTag: SpawnRange
   canvasTag: UI/Canvas
+  terrainTag: Terrain
+  forrestTag: Forrest

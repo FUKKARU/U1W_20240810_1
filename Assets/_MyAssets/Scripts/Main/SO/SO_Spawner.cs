@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Color = UnityEngine.Color; 
 
 namespace SO
 {
@@ -30,15 +31,6 @@ namespace SO
         }
         #endregion
 
-        [SerializeField, Header("スポーン時にランダムに出力するX座標の始点")] float x0;
-        public float X0 => x0;
-        [SerializeField, Header("スポーン時にランダムに出力するY座標の始点")] float y0;
-        public float Y0 => y0;
-        [SerializeField, Header("スポーン時にランダムに出力するX座標の終点")] float x1;
-        public float X1 => x1;
-        [SerializeField, Header("スポーン時にランダムに出力するY座標の終点")] float y1;
-        public float Y1 => y1;
-
         [SerializeField, Header("スポーン用オブジェクトを格納")] List<SpawnObj> spawnObjs;
         public List<SpawnObj> SpawnObjs => spawnObjs;
 
@@ -47,6 +39,12 @@ namespace SO
 
         [SerializeField, Header("キノコの生成範囲を描画するか")] bool showKinokoRange;
         public bool ShowKinokoRange => showKinokoRange;
+
+        [SerializeField, Header("キノコの生成範囲を描画する線の長さ")] float rangeWidth;
+        public float RangeWidth => rangeWidth;
+
+        [SerializeField, Header("キノコの生成範囲を描画する線の色")] Color rangeColor;
+        public Color RangeColor => rangeColor;
 
         [SerializeField, Header("リンゴが実る場所１の名前")] string applePos1;
         public string ApplePos1 => applePos1;

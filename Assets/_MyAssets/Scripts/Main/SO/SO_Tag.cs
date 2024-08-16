@@ -48,5 +48,11 @@ namespace SO
 
         [SerializeField, Header("キャンバス")] private string canvasTag;
         public string CanvasTag => canvasTag;
+
+        [SerializeField, Header("地形")] private string terrainTag;
+        public string TerrainTag => terrainTag;
+
+        [SerializeField, Header("森")] private string forrestTag;
+        public string ForrestTag => forrestTag;
     }
 }

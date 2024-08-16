@@ -12,10 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 614bcdee3a4c8414797e17a3f542ea63, type: 3}
   m_Name: SO_Spawner
   m_EditorClassIdentifier: 
-  x0: -50
-  y0: -50
-  x1: 50
-  y1: 50
   spawnObjs:
   - name: Kinoko
     objdata: {fileID: 1998662823781093078, guid: 28092484227f8ba44ab10133bd90b35a,
@@ -30,7 +26,9 @@ MonoBehaviour:
       type: 3}
     createOffsetTime: 0
   maxKinokoNum: 40
-  showKinokoRange: 1
+  showKinokoRange: 0
+  rangeWidth: 0.3
+  rangeColor: {r: 1, g: 0, b: 0, a: 1}
   applePos1: applePos1
   applePos2: applePos2
   applePos3: applePos3

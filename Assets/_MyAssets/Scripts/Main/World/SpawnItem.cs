@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem.HID;
 using Random = UnityEngine.Random;
 
 namespace Main.Spawn
@@ -29,7 +30,9 @@ namespace Main.Spawn
         public int appleCreatedNum { get; private set; } = 0;
         const byte maxApplePerTree = 3;
         SpawnObj appleInstance;
-        
+
+
+        (float minX, float maxX, float minY, float maxY) minMaxRange;
         void Awake()
         {
 
@@ -44,19 +47,29 @@ namespace Main.Spawn
             spawnerSO = SO_Spawner.Entity;
             tagSO = SO_Tag.Entity;
             spawnRangeVector = new List<Vector2>();
-            spawnRange.AddRange(GameObject.FindGameObjectsWithTag(tagSO.SpawnRangeTag));
-            spawnRange = spawnRange.OrderBy(go => int.Parse(go.name.Split('_').Last())).ToList();
-            appleTrees.AddRange(GameObject.FindGameObjectsWithTag(tagSO.TreeTag));
+            //spawnRange.AddRange(GameObject.FindGameObjectWithTag(tagSO.SpawnRangeTag));
+            //spawnRange = spawnRange.OrderBy(go => int.Parse(go.name.Split('_').Last())).ToList();
+            foreach (Transform child in GameObject.FindGameObjectWithTag(tagSO.SpawnRangeTag).transform)
+            {
+                spawnRange.Add(child.gameObject);
+            }
+            foreach (Transform child in GameObject.FindGameObjectWithTag(tagSO.ForrestTag).transform)
+            {
+                if (child.CompareTag(tagSO.TreeTag))
+                {
+                    appleTrees.Add(child.gameObject);
+                }
+            }
+
             lineRenderer = GetComponent<LineRenderer>();
-            lineRenderer.startWidth = 0.3f;
-            lineRenderer.endWidth = 0.3f;
-            lineRenderer.startColor = Color.red;
-            lineRenderer.endColor = Color.red;
+            lineRenderer.startWidth = lineRenderer.endWidth = spawnerSO.RangeWidth;
+            lineRenderer.startColor = lineRenderer.endColor = spawnerSO.RangeColor;
             lineRenderer.positionCount = spawnRange.Count + 1;
         }
         void Start()
         {
             CreatePoints();
+            minMaxRange = FindRangeMinMax(spawnRangeVector);
             kinokoInstance = spawnerSO.GetInstanceByName("Kinoko");
             appleInstance = spawnerSO.GetInstanceByName("Apple");
             StartCoroutine(CreateKinoko());
@@ -64,7 +77,24 @@ namespace Main.Spawn
         }
         void Update()
         {
-            DrawSpawnRange();
+            if (spawnerSO.ShowKinokoRange)
+            {
+                lineRenderer.enabled = true;
+                DrawSpawnRange();
+                foreach(GameObject go in spawnRange)
+                {
+                    go.GetComponent<MeshRenderer>().enabled = true;
+                }
+            }
+            else
+            {
+                lineRenderer.enabled = false;
+                foreach (GameObject go in spawnRange)
+                {
+                    go.GetComponent<MeshRenderer>().enabled = false;
+                }
+            }
+            
         }
 
         #region kinoko
@@ -76,13 +106,18 @@ namespace Main.Spawn
             do
             {
                 spawnPos = new Vector2(
-                Random.Range(spawnerSO.X0, spawnerSO.X1),
-                Random.Range(spawnerSO.Y0, spawnerSO.Y1));
+                Random.Range(minMaxRange.minX, minMaxRange.maxX),
+                Random.Range(minMaxRange.minY, minMaxRange.maxY));
             } while (CheckSpawnPoint(spawnPos) == false);
             kinokoCreatedNum++;
-            Quaternion rot = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
-            Instantiate(kinokoInstance.objdata, new Vector3(spawnPos.x, 0, spawnPos.y), rot);
-            END_KINOKO:
+            Quaternion rot = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);//ランダムな回転を与える
+            Vector3 checkPos = new Vector3(spawnPos.x, 0, spawnPos.y);
+            if (Physics.Raycast(checkPos, Vector3.down, out RaycastHit hit) && hit.collider.CompareTag(tagSO.TerrainTag))
+            {
+                Instantiate(kinokoInstance.objdata, hit.point, rot).transform.up = hit.normal;//地形に合わせた配置
+            }
+
+        END_KINOKO:
             yield return new WaitForSeconds(kinokoInstance.createOffsetTime);
             StartCoroutine(CreateKinoko());
         }
@@ -95,6 +130,24 @@ namespace Main.Spawn
                 Vector2 position = new Vector2(obj.transform.position.x, obj.transform.position.z);
                 spawnRangeVector.Add(position);
             }
+        }
+        (float minX, float maxX, float minY, float mixY) FindRangeMinMax(List<Vector2> checkList)
+        {
+
+            float maxX = checkList[0].x;
+            float minX = checkList[0].x;
+            float maxY = checkList[0].x;
+            float minY = checkList[0].x;
+
+
+            foreach (Vector2 vec in checkList)
+            {
+                if (vec.x > maxX) maxX = vec.y;
+                if (vec.x < minX) minX = vec.y;
+                if (vec.y > maxY) maxY = vec.y;
+                if (vec.y < minY) minY = vec.y;
+            }
+            return (minX, maxX, minY, maxY);
         }
         //キノコの生成可能範囲に入っているかチェック
         bool CheckSpawnPoint(Vector2 spawnPoint)

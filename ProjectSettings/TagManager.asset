@@ -10,6 +10,8 @@ TagManager:
   - Human
   - UI/Canvas
   - SpawnRange
+  - Terrain
+  - Forrest
   layers:
   - Default
   - TransparentFX

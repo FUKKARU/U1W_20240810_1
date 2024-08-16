@@ -16,7 +16,6 @@ namespace Main.Player
         float interactDistance = 3;
         [SerializeField] Transform stackStartPoint;
         List<GameObject> collectedObjects = new List<GameObject>();
-        public float moveSpeed = 5f;
         GameObject closestHuman;
         GameObject tradeOrNotUI;
         Button initiateTradeButton;
@@ -41,16 +40,6 @@ namespace Main.Player
 
         void Update()
         {
-
-            // 入力を取得
-            float moveX = Input.GetAxis("Horizontal");
-            float moveY = Input.GetAxis("Vertical");
-
-            // 移動方向を計算
-            Vector3 moveDirection = new Vector3(moveX, 0, moveY).normalized;
-
-            // キャラクターを移動
-            transform.position += moveDirection * moveSpeed * Time.deltaTime;
 
             FindHuman();
         }
