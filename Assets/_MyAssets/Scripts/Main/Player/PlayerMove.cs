@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using SO;
 using IA;
-using UnityEngine.Rendering.Universal;
 
 namespace Main.Player
 {
@@ -15,6 +14,7 @@ namespace Main.Player
         [SerializeField] private Transform headTf1;
         [SerializeField] private Transform aboveHeadTf1;
         [SerializeField] private Transform footTf1;
+        [SerializeField] private Animator animator1;
         [Space(25)]
         [Header("形態 2")]
         [SerializeField] private GameObject figure2;
@@ -23,6 +23,7 @@ namespace Main.Player
         [SerializeField] private Transform headTf2;
         [SerializeField] private Transform aboveHeadTf2;
         [SerializeField] private Transform footTf2;
+        [SerializeField] private Animator animator2;
         [Space(25)]
         [SerializeField] private Cinemachine.CinemachineFreeLook freeLookCamera;
         [SerializeField] private Transform freeLookCameraTf;
@@ -37,8 +38,8 @@ namespace Main.Player
             if (!stageBorder) throw new System.Exception($"{nameof(stageBorder)}が設定されていません");
 
             impl = new(
-                new(figure1, figureTf1, figureRb1, headTf1, aboveHeadTf1, footTf1),
-                new(figure2, figureTf2, figureRb2, headTf2, aboveHeadTf2, footTf2),
+                new(figure1, figureTf1, figureRb1, headTf1, aboveHeadTf1, footTf1, animator1),
+                new(figure2, figureTf2, figureRb2, headTf2, aboveHeadTf2, footTf2, animator2),
                 freeLookCamera, freeLookCameraTf,
                 initPlaceTf, stageBorder
                 );
@@ -246,18 +247,31 @@ namespace Main.Player
             PlayerFigure fgr = GetFigure(figureIndex);
             if (fgr.FigureTf.position.y < -100) fgr.FigureTf.position = initPosition;  // 落下し過ぎたら、初期座標に戻す
             Vector2 moveValueInputted = InputGetter.Instance.Main_MoveValue2.Get<Vector2>();
-            Vector3 moveValueLocalNormed = new Vector3(moveValueInputted.x, 0, moveValueInputted.y).normalized;
-            Vector3 moveValueLocal = moveValueLocalNormed * (moveSpeed * Time.deltaTime);
-            Vector3 moveValue = fgr.FigureTf.right * moveValueLocal.x + fgr.FigureTf.forward * moveValueLocal.z;
-            fgr.FigureTf.position += moveValue;
-            if (!stageBorder.IsIn(fgr.FigureTf.position)) fgr.FigureTf.position = prePosition;
-            prePosition = fgr.FigureTf.position;
 
-            // 他の形態を現在の形態にコンストレイン
-            Vector3 toPos = GetFigure(figureIndex).FigureTf.position;
-            foreach (FigureIndex e in GetOtherFigureIndices(figureIndex))
+            // 動いていない
+            if (moveValueInputted == Vector2.zero)
             {
-                GetFigure(e).FigureTf.position = toPos;
+                fgr.Animator.SetBool("IsMoving", false);
+                return;
+            }
+            // 動いている
+            else
+            {
+                Vector3 moveValueLocalNormed = new Vector3(moveValueInputted.x, 0, moveValueInputted.y).normalized;
+                Vector3 moveValueLocal = moveValueLocalNormed * (moveSpeed * Time.deltaTime);
+                Vector3 moveValue = fgr.FigureTf.right * moveValueLocal.x + fgr.FigureTf.forward * moveValueLocal.z;
+                fgr.FigureTf.position += moveValue;
+                if (!stageBorder.IsIn(fgr.FigureTf.position)) fgr.FigureTf.position = prePosition;
+                prePosition = fgr.FigureTf.position;
+
+                // 他の形態を現在の形態にコンストレイン
+                Vector3 toPos = GetFigure(figureIndex).FigureTf.position;
+                foreach (FigureIndex e in GetOtherFigureIndices(figureIndex))
+                {
+                    GetFigure(e).FigureTf.position = toPos;
+                }
+
+                fgr.Animator.SetBool("IsMoving", true);
             }
         }
 
@@ -312,9 +326,10 @@ namespace Main.Player
         public Transform HeadTf { get; private set; }
         public Transform AboveHeadTf { get; private set; }
         public Transform FootTf { get; private set; }
+        public Animator Animator { get; private set; }
 
         public PlayerFigure(GameObject figure, Transform figureTf, Rigidbody figureRb,
-            Transform headTf, Transform aboveHeadTf, Transform footTf)
+            Transform headTf, Transform aboveHeadTf, Transform footTf, Animator animator)
         {
             this.Figure = figure;
             this.FigureTf = figureTf;
@@ -322,6 +337,7 @@ namespace Main.Player
             this.HeadTf = headTf;
             this.AboveHeadTf = aboveHeadTf;
             this.FootTf = footTf;
+            this.Animator = animator;
         }
 
         public void Dispose()
@@ -332,6 +348,7 @@ namespace Main.Player
             HeadTf = null;
             AboveHeadTf = null;
             FootTf = null;
+            Animator = null;
         }
 
         public bool IsNullExist()
@@ -342,6 +359,7 @@ namespace Main.Player
             if (!HeadTf) return true;
             if (!AboveHeadTf) return true;
             if (!FootTf) return true;
+            if (!Animator) return true;
 
             return false;
         }
