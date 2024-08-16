@@ -55,6 +55,24 @@ namespace IA
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""d00da5c4-cdf9-4784-a84c-ad5e8d73ea64"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Cancel"",
+                    ""type"": ""Button"",
+                    ""id"": ""c1903215-fad9-4d39-afd6-b083c32296c8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -72,7 +90,7 @@ namespace IA
                 {
                     ""name"": """",
                     ""id"": ""b8d4fd8f-a9e6-443e-9e1f-e03dc1a85006"",
-                    ""path"": ""<Keyboard>/c"",
+                    ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -134,6 +152,28 @@ namespace IA
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""511a97f1-0826-4687-999d-0eff664f38e1"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e2a0036a-b2a4-40f4-bed7-6f670133033e"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -145,6 +185,8 @@ namespace IA
             m_Main_Charge = m_Main.FindAction("Charge", throwIfNotFound: true);
             m_Main_Transform = m_Main.FindAction("Transform", throwIfNotFound: true);
             m_Main_Move = m_Main.FindAction("Move", throwIfNotFound: true);
+            m_Main_Interact = m_Main.FindAction("Interact", throwIfNotFound: true);
+            m_Main_Cancel = m_Main.FindAction("Cancel", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -209,6 +251,8 @@ namespace IA
         private readonly InputAction m_Main_Charge;
         private readonly InputAction m_Main_Transform;
         private readonly InputAction m_Main_Move;
+        private readonly InputAction m_Main_Interact;
+        private readonly InputAction m_Main_Cancel;
         public struct MainActions
         {
             private @IA m_Wrapper;
@@ -216,6 +260,8 @@ namespace IA
             public InputAction @Charge => m_Wrapper.m_Main_Charge;
             public InputAction @Transform => m_Wrapper.m_Main_Transform;
             public InputAction @Move => m_Wrapper.m_Main_Move;
+            public InputAction @Interact => m_Wrapper.m_Main_Interact;
+            public InputAction @Cancel => m_Wrapper.m_Main_Cancel;
             public InputActionMap Get() { return m_Wrapper.m_Main; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -234,6 +280,12 @@ namespace IA
                 @Move.started += instance.OnMove;
                 @Move.performed += instance.OnMove;
                 @Move.canceled += instance.OnMove;
+                @Interact.started += instance.OnInteract;
+                @Interact.performed += instance.OnInteract;
+                @Interact.canceled += instance.OnInteract;
+                @Cancel.started += instance.OnCancel;
+                @Cancel.performed += instance.OnCancel;
+                @Cancel.canceled += instance.OnCancel;
             }
 
             private void UnregisterCallbacks(IMainActions instance)
@@ -247,6 +299,12 @@ namespace IA
                 @Move.started -= instance.OnMove;
                 @Move.performed -= instance.OnMove;
                 @Move.canceled -= instance.OnMove;
+                @Interact.started -= instance.OnInteract;
+                @Interact.performed -= instance.OnInteract;
+                @Interact.canceled -= instance.OnInteract;
+                @Cancel.started -= instance.OnCancel;
+                @Cancel.performed -= instance.OnCancel;
+                @Cancel.canceled -= instance.OnCancel;
             }
 
             public void RemoveCallbacks(IMainActions instance)
@@ -269,6 +327,8 @@ namespace IA
             void OnCharge(InputAction.CallbackContext context);
             void OnTransform(InputAction.CallbackContext context);
             void OnMove(InputAction.CallbackContext context);
+            void OnInteract(InputAction.CallbackContext context);
+            void OnCancel(InputAction.CallbackContext context);
         }
     }
 }

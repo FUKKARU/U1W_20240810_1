@@ -10,6 +10,9 @@ namespace Main.Spawn
     [RequireComponent(typeof(LineRenderer))]
     public class SpawnItem : MonoBehaviour
     {
+        [SerializeField, Header("ÉäÉìÉSÇÃê∂ê¨êe")] private Transform appleParentTf;
+        [SerializeField, Header("ÉLÉmÉRÇÃê∂ê¨îÕàÕ")] private Transform mushroomSpawnRangeTf;
+
         SO_Spawner spawnerSO;
         SO_Tag tagSO;
         public static SpawnItem Instance { get; set; } = null;
@@ -44,13 +47,11 @@ namespace Main.Spawn
             spawnerSO = SO_Spawner.Entity;
             tagSO = SO_Tag.Entity;
             spawnRangeVector = new List<Vector2>();
-            //spawnRange.AddRange(GameObject.FindGameObjectWithTag(tagSO.SpawnRangeTag));
-            //spawnRange = spawnRange.OrderBy(go => int.Parse(go.name.Split('_').Last())).ToList();
-            foreach (Transform child in GameObject.FindGameObjectWithTag(tagSO.SpawnRangeTag).transform)
+            foreach (Transform child in mushroomSpawnRangeTf)
             {
                 spawnRange.Add(child.gameObject);
             }
-            foreach (Transform child in GameObject.FindGameObjectWithTag(tagSO.ForrestTag).transform)
+            foreach (Transform child in appleParentTf)
             {
                 if (child.CompareTag(tagSO.TreeTag))
                 {
@@ -65,6 +66,9 @@ namespace Main.Spawn
         }
         void Start()
         {
+            if (!appleParentTf) throw new Exception($"{nameof(appleParentTf)}Ç™ê›íËÇ≥ÇÍÇƒÇ¢Ç‹ÇπÇÒ");
+            if (!mushroomSpawnRangeTf) throw new Exception($"{nameof(mushroomSpawnRangeTf)}Ç™ê›íËÇ≥ÇÍÇƒÇ¢Ç‹ÇπÇÒ");
+
             CreatePoints();
             minMaxRange = FindRangeMinMax(spawnRangeVector);
             kinokoInstance = spawnerSO.GetInstanceByName("Kinoko");
@@ -78,7 +82,7 @@ namespace Main.Spawn
             {
                 lineRenderer.enabled = true;
                 DrawSpawnRange();
-                foreach(GameObject go in spawnRange)
+                foreach (GameObject go in spawnRange)
                 {
                     go.GetComponent<MeshRenderer>().enabled = true;
                 }
@@ -91,7 +95,7 @@ namespace Main.Spawn
                     go.GetComponent<MeshRenderer>().enabled = false;
                 }
             }
-            
+
         }
 
         #region kinoko
