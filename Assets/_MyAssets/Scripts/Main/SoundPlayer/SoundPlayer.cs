@@ -64,6 +64,8 @@ namespace General
 
         internal void Play(SoundType soundType)
         {
+            if (!audioSource) return;
+
             System.Action action = soundType switch
             {
                 SoundType.Title_TitleBGM => () => audioSource.Raise(SO_Sound.Entity.TitleBGM, SType.BGM),

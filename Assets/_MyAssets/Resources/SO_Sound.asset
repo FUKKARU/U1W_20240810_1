@@ -22,4 +22,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  _buttonClickSE: {fileID: 0}
+  _buttonClickSE: {fileID: 8300000, guid: 1e461de082de72e43bfe87ca37ef74fb, type: 3}
+  _itemGetSE: {fileID: 8300000, guid: 2219570ccc6f42e49a0159129cde8bf7, type: 3}
+  _tradeDoneSE: {fileID: 8300000, guid: 2219570ccc6f42e49a0159129cde8bf7, type: 3}

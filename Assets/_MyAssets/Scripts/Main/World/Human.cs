@@ -48,22 +48,19 @@ namespace Main.Trade
 
         void TradeAburaage()
         {
-            soundPlayer.Play(SoundType.General_ClickSE);
-
             tradeRateText.text = humanSO.EndMessage;
             tradeButton.interactable = false;
         }
 
         public void OpenTrade()
         {
-            soundPlayer.Play(SoundType.General_ClickSE);
-
             tradeUI.SetActive(true);
             tradeRateText.text = "Š”         :ƒŠƒ“ƒS: " + playerCollectScript.appleNum + "ƒLƒmƒR:" + playerCollectScript.kinokoNum + "\nŒğˆÕƒŒ[ƒg:ƒŠƒ“ƒS: " + appleRate + "ƒLƒmƒR: " + kinokoRate;
             tradeButton.interactable =
                 playerCollectScript.kinokoNum < kinokoRate || playerCollectScript.appleNum < appleRate
                 ? false : true;
             tradeButton.onClick.RemoveAllListeners();
+            tradeButton.onClick.AddListener(() => soundPlayer.Play(SoundType.Main_TradeDoneSE));
             tradeButton.onClick.AddListener(TradeAburaage);
             tradeButton.onClick.AddListener(() => playerCollectScript.GetAburaage(appleRate, kinokoRate));
         }

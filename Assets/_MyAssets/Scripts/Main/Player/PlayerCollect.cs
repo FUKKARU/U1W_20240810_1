@@ -119,6 +119,7 @@ namespace Main.Player
                 onInteract = true;
                 tradeOrNotUI.SetActive(true);
                 initiateTradeButton.onClick.RemoveAllListeners();
+                initiateTradeButton.onClick.AddListener(() => soundPlayer.Play(SoundType.General_ClickSE));
                 initiateTradeButton.onClick.AddListener(closestHuman.GetComponent<Trade.Human>().OpenTrade);
                 initiateTradeButton.onClick.AddListener(HideTradeOrNotUI);
             }
@@ -132,8 +133,6 @@ namespace Main.Player
 
         public void HideTradeOrNotUI()
         {
-            soundPlayer.Play(SoundType.General_ClickSE);
-
             tradeOrNotUI.SetActive(false);
         }
 
@@ -146,8 +145,6 @@ namespace Main.Player
 
         public void GetAburaage(int usedAppleNum, int usedKinokoNum)//–û—g‚°æ“¾‚ÌÛ‚Ìˆ—
         {
-            soundPlayer.Play(SoundType.Main_TradeDoneSE);
-
             kinokoNum -= usedKinokoNum;
             appleNum -= usedAppleNum;
             List<GameObject> destroyObjects = new List<GameObject>();

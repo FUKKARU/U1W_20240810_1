@@ -16,8 +16,7 @@ namespace Credit.Button
         [SerializeField, Header("戻るボタンのコンポーネント")] private ButtonInfo _backButtonInfo;
         private ButtonInfo backButtonInfo => _backButtonInfo;
 
-        [SerializeField, Header("AudioSource")] private AudioSource _audioSource;
-        private AudioSource audioSource => _audioSource;
+        [SerializeField, Header("SoundPlayer")] private SoundPlayer soundPlayer;
 
         private bool isBackButtonHandlable = false;
 
@@ -79,7 +78,7 @@ namespace Credit.Button
             _backButtonInfo.Dispose();
             _backButtonInfo = null;
 
-            _audioSource = null;
+            soundPlayer = null;
         }
 
         #endregion
@@ -118,7 +117,7 @@ namespace Credit.Button
                     {
                         isBackButtonHandlable = false;
 
-                        audioSource.Raise(SO_Sound.Entity.ButtonClickSE, SType.SE);
+                        soundPlayer.Play(SoundType.General_ClickSE);
 
                         backButtonInfo.Image.sprite = backButtonSprites.Click;
 

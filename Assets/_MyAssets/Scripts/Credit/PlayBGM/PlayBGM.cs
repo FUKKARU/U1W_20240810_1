@@ -1,7 +1,7 @@
 using General;
 using UnityEngine;
 
-namespace Title
+namespace Credit
 {
     public sealed class PlayBGM : MonoBehaviour
     {
