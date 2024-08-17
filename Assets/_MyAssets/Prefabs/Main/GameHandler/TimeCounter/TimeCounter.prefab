@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4119785790277459360}
   - component: {fileID: 2998168983121455390}
   m_Layer: 0
-  m_Name: GameCounter
+  m_Name: TimeCounter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,3 +45,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeUIText: {fileID: 0}
+  sun: {fileID: 0}
