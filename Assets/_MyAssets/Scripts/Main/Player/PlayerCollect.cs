@@ -1,5 +1,6 @@
 using SO;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,6 +26,22 @@ namespace Main.Player
         SO_Tag tagSO;
         SO_HierarchyPath hierarchyPathSO;
 
+        [Space(25)]
+        [SerializeField] private Image appleUIImage;
+        [SerializeField] private TextMeshProUGUI appleUIText;
+        [SerializeField] private Image mushroomUIImage;
+        [SerializeField] private TextMeshProUGUI mushroomUIText;
+        [SerializeField] private Image aburaageUIImage;
+        [SerializeField] private TextMeshProUGUI aburaageUIText;
+        ItemUI itemUI;
+
+        private enum Item
+        {
+            Apple,
+            Mushroom,
+            Aburaage
+        }
+
         void Awake()
         {
             tagSO = SO_Tag.Entity;
@@ -36,9 +53,25 @@ namespace Main.Player
             initiateTradeButton = tradeOrNotUI.transform.Find(hierarchyPathSO.InitiateTradeButon).GetComponent<Button>();
         }
 
+        private void OnEnable()
+        {
+            itemUI = new(
+                new(appleUIImage, appleUIText),
+                new(mushroomUIImage, mushroomUIText),
+                new(aburaageUIImage, aburaageUIText)
+                );
+        }
+
+        private void OnDisable()
+        {
+            itemUI.Dispose();
+            itemUI = null;
+        }
+
         void Update()
         {
             FindHuman();
+            UpdateUI();
         }
 
         void StackHead()
@@ -164,6 +197,104 @@ namespace Main.Player
                 collectedObjects.Add(collision.gameObject);
                 StackHead();
             }
+        }
+
+        private void UpdateUI()
+        {
+            int appleNum = 0;
+            int mushroomNum = 0;
+            int aburaageNum = 0;
+
+            foreach (var e in collectedObjects)
+            {
+                Item item = Which(e);
+
+                if (item == Item.Apple) appleNum++;
+                else if (item == Item.Mushroom) mushroomNum++;
+                else if (item == Item.Aburaage) aburaageNum++;
+                else throw new System.Exception("–³Œø‚ÈŽí—Þ‚Å‚·");
+            }
+
+            itemUI.Apple.SetText(appleNum.ToString());
+            itemUI.Mushroom.SetText(mushroomNum.ToString());
+            itemUI.Aburaage.SetText(aburaageNum.ToString());
+        }
+
+        private Item Which(GameObject obj)
+        {
+            if (obj.tag == tagSO.AppleTag) return Item.Apple;
+            else if (obj.tag == tagSO.KinokoTag) return Item.Mushroom;
+            else return Item.Aburaage;
+        }
+    }
+
+    internal sealed class ItemUI : System.IDisposable
+    {
+        private ItemUIUnit _apple;
+        internal ItemUIUnit Apple => _apple;
+
+        private ItemUIUnit _mushroom;
+        internal ItemUIUnit Mushroom => _mushroom;
+
+        private ItemUIUnit _aburaage;
+        internal ItemUIUnit Aburaage => _aburaage;
+
+        internal ItemUI(ItemUIUnit apple, ItemUIUnit mushroom, ItemUIUnit aburaage)
+        {
+            this._apple = apple;
+            this._mushroom = mushroom;
+            this._aburaage = aburaage;
+        }
+
+        public void Dispose()
+        {
+            _apple.Dispose();
+            _mushroom.Dispose();
+            _aburaage.Dispose();
+            _apple = null;
+            _mushroom = null;
+            _aburaage = null;
+        }
+
+        internal bool IsNullExist()
+        {
+            if (_apple == null) return true;
+            if (_mushroom == null) return true;
+            if (_aburaage == null) return true;
+            if (_apple.IsNullExist()) return true;
+            if (_mushroom.IsNullExist()) return true;
+            if (_aburaage.IsNullExist()) return true;
+            return false;
+        }
+    }
+
+    internal sealed class ItemUIUnit : System.IDisposable
+    {
+        private Image image;
+        private TextMeshProUGUI text;
+
+        internal ItemUIUnit(Image image, TextMeshProUGUI text)
+        {
+            this.image = image;
+            this.text = text;
+        }
+
+        public void Dispose()
+        {
+            image = null;
+            text = null;
+        }
+
+        internal bool IsNullExist()
+        {
+            if (!image) return true;
+            if (!text) return true;
+            return false;
+        }
+
+        internal void SetText(string text)
+        {
+            this.text.text = text;
         }
     }
 }

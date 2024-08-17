@@ -54,5 +54,11 @@ namespace SO
 
         [SerializeField, Header("ボタンのクリック")] private AudioClip _buttonClickSE;
         public AudioClip ButtonClickSE => _buttonClickSE;
+
+        [SerializeField, Header("アイテム入手")] private AudioClip _itemGetSE;
+        public AudioClip ItemGetSE => _itemGetSE;
+
+        [SerializeField, Header("交易完了")] private AudioClip _tradeDoneSE;
+        public AudioClip TradeDoneSE => _tradeDoneSE;
     }
 }
