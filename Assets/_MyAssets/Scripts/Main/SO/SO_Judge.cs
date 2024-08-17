@@ -30,5 +30,9 @@ namespace SO
 
         [SerializeField, Header("ƒQ[ƒ€I—¹‚Ü‚Å‚ÌŽžŠÔ§ŒÀ[•b]")] private float _timeLimit;
         public float TimeLimit => _timeLimit;
+
+        [SerializeField, Header("Directional Light‚ÌŒX‚«x‚Ì•Ï‰»(ŠJŽn ¨ I—¹)")] private Vector2 _sunAngles;
+        public float SunStartAngle => _sunAngles.x;
+        public float SunEndAngle => _sunAngles.y;
     }
 }
