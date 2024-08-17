@@ -104,7 +104,9 @@ namespace Main.Player
         private bool isStaminaIncreasable = true;  // スタミナが回復可能かどうか
         private bool isCharging = false;  // 突進中かどうか
 
-        private bool isInitPositionChecked = false;  // initPositionが有効な値かどうか、確認したフラグ
+        private bool isCheckedOnFirstUpdate = false;  // 最初のUpdateで行う、チェックのフラグ
+
+        private static readonly string IS_MOVING_PARAM = "IsMoving";
 
         public PlayerMoveBhv(PlayerFigure figure1, PlayerFigure figure2,
             Cinemachine.CinemachineFreeLook freeLookCamera, Transform freeLookCameraTf, Transform stackStartPoint,
@@ -149,9 +151,9 @@ namespace Main.Player
             if (!stackStartPoint) return;
             if (!stageBorder) return;
 
-            if (!isInitPositionChecked)
+            if (!isCheckedOnFirstUpdate)
             {
-                isInitPositionChecked = true;
+                isCheckedOnFirstUpdate = true;
 
                 if (!stageBorder.IsIn(initPosition))
                     throw new System.Exception($"プレイヤーの初期座標 {initPosition} が、ステージの範囲内にありません");
@@ -302,7 +304,7 @@ namespace Main.Player
             // 動いていない
             if (moveValueInputted == Vector2.zero)
             {
-                fgr.Animator.SetBool("IsMoving", false);
+                fgr.Animator.Set(IS_MOVING_PARAM, false);
                 return;
             }
             // 動いている
@@ -322,7 +324,7 @@ namespace Main.Player
                     GetFigure(e).FigureTf.position = toPos;
                 }
 
-                fgr.Animator.SetBool("IsMoving", true);
+                fgr.Animator.Set(IS_MOVING_PARAM, true);
             }
         }
 
@@ -537,6 +539,46 @@ namespace Main.Player
         {
             float y = (x - a) * (d - c) / (b - a) + c;
             return y;
+        }
+
+        internal static bool Has(this Animator animator, string param)
+        {
+            foreach (var e in animator.parameters)
+            {
+                if (e.name == param)
+                    return true;
+            }
+
+            return false;
+        }
+
+        internal static void Set<T>(this Animator animator, string param, T var)
+        {
+            if (typeof(T) == typeof(bool))
+            {
+                if (!animator.Has(param))
+                    throw new System.Exception($"{nameof(animator)}が、パラメータ'{param}'を持っていません");
+                else
+                    animator.SetBool(param, (bool)(object)var);
+            }
+            else if (typeof(T) == typeof(int))
+            {
+                if (!animator.Has(param))
+                    throw new System.Exception($"{nameof(animator)}が、パラメータ'{param}'を持っていません");
+                else
+                    animator.SetInteger(param, (int)(object)var);
+            }
+            else if (typeof(T) == typeof(float))
+            {
+                if (!animator.Has(param))
+                    throw new System.Exception($"{nameof(animator)}が、パラメータ'{param}'を持っていません");
+                else
+                    animator.SetFloat(param, (float)(object)var);
+            }
+            else
+            {
+                throw new System.Exception($"{nameof(T)}は無効な型です");
+            }
         }
     }
 }
