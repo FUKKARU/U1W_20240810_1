@@ -9,12 +9,13 @@ namespace Main.GameHandler
     {
         [SerializeField] private TextMeshProUGUI timeUIText;
         [SerializeField] private Transform sun;
+        [SerializeField] private Judger judger;
 
         private TimeCounterBhv impl;
 
         private void OnEnable()
         {
-            impl = new(timeUIText, sun);
+            impl = new(timeUIText, sun, judger);
         }
 
         private void OnDisable()
@@ -33,13 +34,15 @@ namespace Main.GameHandler
     {
         private TextMeshProUGUI timeText;
         private Transform sun;
+        private Judger judger;
 
         private float t = 0;  // ゲームの時間カウンタ
 
-        internal TimeCounterBhv(TextMeshProUGUI timeText, Transform sun)
+        internal TimeCounterBhv(TextMeshProUGUI timeText, Transform sun, Judger judger)
         {
             this.timeText = timeText;
             this.sun = sun;
+            this.judger = judger;
 
             t = SO_Judge.Entity.TimeLimit;
         }
@@ -48,30 +51,27 @@ namespace Main.GameHandler
         {
             timeText = null;
             sun = null;
+            judger = null;
         }
 
         internal void Update()
         {
             if (!timeText) return;
             if (!sun) return;
+            if (!judger) return;
 
             if (t <= 0) return;
 
             t -= Time.deltaTime;
             if (t <= 0)
             {
-                GameOver();
+                judger.GameOver();
             }
             else
             {
                 timeText.text = Mathf.RoundToInt(t).Normed();
                 UpdateSunRotation(t);
             }
-        }
-
-        private void GameOver()
-        {
-            Debug.Log("Game Over!");
         }
 
         private void UpdateSunRotation(float t)

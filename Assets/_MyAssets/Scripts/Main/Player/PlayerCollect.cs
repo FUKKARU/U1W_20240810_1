@@ -11,8 +11,9 @@ namespace Main.Player
     public class PlayerCollect : MonoBehaviour
     {
         [SerializeField] private SoundPlayer soundPlayer;
-
-        [SerializeField] PlayerMove playerMove;
+        [SerializeField] private PlayerMove playerMove;
+        [SerializeField] private Judger judger;
+        [SerializeField] private Transform hyojuTf;
 
         public int kinokoNum { get; private set; } = 0;
         public int appleNum { get; private set; } = 0;
@@ -76,6 +77,7 @@ namespace Main.Player
         {
             FindHuman();
             UpdateUI();
+            CheckClear();
         }
 
         void StackHead()
@@ -209,6 +211,36 @@ namespace Main.Player
 
         private void UpdateUI()
         {
+            (int appleNum, int mushroomNum, int aburaageNum) = CountItems();
+
+            itemUI.Apple.SetText(appleNum.ToString());
+            itemUI.Mushroom.SetText(mushroomNum.ToString());
+            itemUI.Aburaage.SetText(aburaageNum.ToString());
+        }
+
+        private Item Which(GameObject obj)
+        {
+            if (obj.tag == tagSO.AppleTag) return Item.Apple;
+            else if (obj.tag == tagSO.KinokoTag) return Item.Mushroom;
+            else return Item.Aburaage;
+        }
+
+        private void CheckClear()
+        {
+            // 兵十との距離が十分近いか？
+            float d2 = SO_Judge.Entity.GoalDistance * SO_Judge.Entity.GoalDistance;
+            if (playerMove.CalcSqrMagnitude(hyojuTf.position) > d2) return;
+
+            // 油揚げは必要個数分集まっているか？
+            (int _, int _, int aburaageNum) = CountItems();
+            if (aburaageNum < SO_Judge.Entity.AburaageGoalNum) return;
+
+            // それならば、ゲームクリア！
+            judger.GameClear();
+        }
+
+        private (int, int, int) CountItems()
+        {
             int appleNum = 0;
             int mushroomNum = 0;
             int aburaageNum = 0;
@@ -223,16 +255,7 @@ namespace Main.Player
                 else throw new System.Exception("無効な種類です");
             }
 
-            itemUI.Apple.SetText(appleNum.ToString());
-            itemUI.Mushroom.SetText(mushroomNum.ToString());
-            itemUI.Aburaage.SetText(aburaageNum.ToString());
-        }
-
-        private Item Which(GameObject obj)
-        {
-            if (obj.tag == tagSO.AppleTag) return Item.Apple;
-            else if (obj.tag == tagSO.KinokoTag) return Item.Mushroom;
-            else return Item.Aburaage;
+            return (appleNum, mushroomNum, aburaageNum);
         }
     }
 
