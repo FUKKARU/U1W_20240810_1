@@ -60,6 +60,7 @@ namespace Main.GameHandler
             if (!sun) return;
             if (!judger) return;
 
+            if (judger.GetResult() != Result.Undone) return;
             if (t <= 0) return;
 
             t -= Time.deltaTime;

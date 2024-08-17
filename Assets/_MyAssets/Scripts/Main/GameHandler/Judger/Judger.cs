@@ -2,6 +2,13 @@ using UnityEngine;
 
 namespace Main.GameHandler
 {
+    internal enum Result
+    {
+        Undone,
+        Clear,
+        Over,
+    }
+
     public sealed class Judger : MonoBehaviour
     {
         private JudgerBhv impl;
@@ -31,17 +38,15 @@ namespace Main.GameHandler
         {
             impl.GameClear();
         }
+
+        internal Result GetResult()
+        {
+            return impl.GetResult();
+        }
     }
 
     internal sealed class JudgerBhv : System.IDisposable
     {
-        private enum Result
-        {
-            Undone,
-            Clear,
-            Over,
-        }
-
         private Result result;
 
         internal JudgerBhv()
@@ -59,16 +64,35 @@ namespace Main.GameHandler
 
         }
 
+        internal Result GetResult()
+        {
+            return result;
+        }
+
         internal void GameOver()
         {
             if (result != Result.Undone) return;
             result = Result.Over;
+
+            GameOverBhv();
         }
 
         internal void GameClear()
         {
             if (result != Result.Undone) return;
             result = Result.Clear;
+
+            GameClearBhv();
+        }
+
+        private void GameOverBhv()
+        {
+            Debug.Log("Game Over");
+        }
+
+        private void GameClearBhv()
+        {
+            Debug.Log("Game Clear");
         }
     }
 }

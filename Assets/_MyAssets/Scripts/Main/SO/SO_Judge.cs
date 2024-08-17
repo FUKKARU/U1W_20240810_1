@@ -36,7 +36,7 @@ namespace SO
         public float SunEndAngle => _sunAngles.y;
 
         [SerializeField, Range(1, 5), Header("ゲームクリアに必要な油揚げの個数")] private int _aburaageGoalNum;
-        public int AburaageGoalNum;
+        public int AburaageGoalNum => _aburaageGoalNum;
 
         [SerializeField, Header("兵十にどのくらい近づいたら、クリアの判定を行うことができるか")] private float _goalDistance;
         public float GoalDistance => _goalDistance;
