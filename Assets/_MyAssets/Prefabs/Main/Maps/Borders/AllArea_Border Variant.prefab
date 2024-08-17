@@ -1585,6 +1585,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 893405131967602779, guid: bf38a34b3e762fd4190f4320f1b2d4a3,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1372884714779122989, guid: bf38a34b3e762fd4190f4320f1b2d4a3,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1492233021259218105, guid: bf38a34b3e762fd4190f4320f1b2d4a3,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1995169229779865163, guid: bf38a34b3e762fd4190f4320f1b2d4a3,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2261072360365127178, guid: bf38a34b3e762fd4190f4320f1b2d4a3,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1714,6 +1734,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.z
       value: -94.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5559643725996002466, guid: bf38a34b3e762fd4190f4320f1b2d4a3,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5559643725996002466, guid: bf38a34b3e762fd4190f4320f1b2d4a3,
         type: 3}
@@ -2110,6 +2135,11 @@ PrefabInstance:
       propertyPath: m_Positions.Array.data[25].z
       value: -116.4
       objectReference: {fileID: 0}
+    - target: {fileID: 5950247547386116723, guid: bf38a34b3e762fd4190f4320f1b2d4a3,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7673091717662259723, guid: bf38a34b3e762fd4190f4320f1b2d4a3,
         type: 3}
       propertyPath: color.b
@@ -2123,6 +2153,11 @@ PrefabInstance:
     - target: {fileID: 7673091717662259723, guid: bf38a34b3e762fd4190f4320f1b2d4a3,
         type: 3}
       propertyPath: color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8194217407606132131, guid: bf38a34b3e762fd4190f4320f1b2d4a3,
+        type: 3}
+      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8417136304757131227, guid: bf38a34b3e762fd4190f4320f1b2d4a3,

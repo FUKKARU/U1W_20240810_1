@@ -1,3 +1,4 @@
+using General;
 using SO;
 using System.Collections.Generic;
 using TMPro;
@@ -8,6 +9,8 @@ namespace Main.Player
 {
     public class PlayerCollect : MonoBehaviour
     {
+        [SerializeField] SoundPlayer soundPlayer;
+
         [SerializeField] PlayerMove playerMove;
 
         public int kinokoNum { get; private set; } = 0;
@@ -129,16 +132,21 @@ namespace Main.Player
 
         public void HideTradeOrNotUI()
         {
+            soundPlayer.Play(SoundType.General_ClickSE);
+
             tradeOrNotUI.SetActive(false);
         }
 
         public void OnIneractFalse()
         {
+            soundPlayer.Play(SoundType.General_ClickSE);
+
             onInteract = false;
         }
 
         public void GetAburaage(int usedAppleNum, int usedKinokoNum)//–û—g‚°æ“¾‚ÌÛ‚Ìˆ—
         {
+            soundPlayer.Play(SoundType.General_ClickSE);
 
             kinokoNum -= usedKinokoNum;
             appleNum -= usedAppleNum;

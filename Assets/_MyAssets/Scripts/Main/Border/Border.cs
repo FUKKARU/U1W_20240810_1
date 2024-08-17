@@ -83,8 +83,8 @@ namespace Main.Border
             if (!pins) throw new System.Exception($"{nameof(pins)}が設定されていません");
             if (!lineRenderer) throw new System.Exception($"{nameof(lineRenderer)}が設定されていません");
 
-            // ビルドデータなら、強制非アクティブにする！
-            bool active = (GetState() == State.Build) ? false : isActiveAndEnabled;
+            // ビルドデータまたはエディタで実行中なら、強制非アクティブにする！
+            bool active = (GetState() == State.Editor_Editing) ? isLineRendererActive : false;
 
             // エディタで実行中だけど、アクティブになっているよ？いいの？
             if (GetState() == State.Editor_Playing && active)
@@ -93,27 +93,26 @@ namespace Main.Border
             // ここで実際に、アクティブ状態を設定
             lineRenderer.enabled = active;
             foreach (Transform e in pins)
-                e.gameObject.SetActive(active);
+                e.gameObject.GetComponent<MeshRenderer>().enabled = active;
 
-            // 非アクティブなら、ここから先はやらなくていい
+            int pinNum = pins.childCount;
+
+            // ピンのリストを更新
+            pinList.Clear();
+            for (int i = 0; i < pinNum; i++)
+                pinList.Add(pins.GetChild(i));
+
+            // 非アクティブなら、ここから先はやらなくて良い
             if (!active) return;
 
             // マテリアルと色設定
             Material mat = new(material) { color = color };
             lineRenderer.sharedMaterial = mat;
 
-            // 線を描画させる
-
-            int pinNum = pins.childCount;
-
+            // 線を描画する
             lineRenderer.startWidth = thin;
             lineRenderer.endWidth = thin;
             lineRenderer.positionCount = pinNum + 1;
-
-            pinList.Clear();
-            for (int i = 0; i < pinNum; i++)
-                pinList.Add(pins.GetChild(i));
-
             for (int i = 0; i < pinNum; i++)
                 lineRenderer.SetPosition(i, pinList[i].position);
             lineRenderer.SetPosition(pinNum, pinList[0].position);

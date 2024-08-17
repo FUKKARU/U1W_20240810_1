@@ -21,8 +21,7 @@ namespace Title.Button
         private ButtonInfo startButtonInfo => _buttonInfoList[1];
         private ButtonInfo creditButtonInfo => _buttonInfoList[2];
 
-        [SerializeField, Header("AudioSource")] private AudioSource _audioSource;
-        private AudioSource audioSource => _audioSource;
+        [SerializeField, Header("AudioSource")] private SoundPlayer soundPlayer;
 
         private bool isExitButtonHandlable = false;
         private bool isStartButtonHandlable = false;
@@ -123,7 +122,7 @@ namespace Title.Button
             _buttonInfoList[0] = null;
             _buttonInfoList = null;
 
-            _audioSource = null;
+            soundPlayer = null;
         }
 
         #endregion
@@ -164,7 +163,8 @@ namespace Title.Button
                         isStartButtonHandlable = false;
                         isCreditButtonHandlable = false;
 
-                        audioSource.Raise(SO_Sound.Entity.ButtonClickSE, SType.SE);
+
+                        soundPlayer.Play(SoundType.General_ClickSE);
 
                         exitButtonInfo.Image.sprite = exitButtonSprites.Click;
 
@@ -216,7 +216,7 @@ namespace Title.Button
                         isStartButtonHandlable = false;
                         isCreditButtonHandlable = false;
 
-                        audioSource.Raise(SO_Sound.Entity.ButtonClickSE, SType.SE);
+                        soundPlayer.Play(SoundType.General_ClickSE);
 
                         startButtonInfo.Image.sprite = startButtonSprites.Click;
 
@@ -268,7 +268,7 @@ namespace Title.Button
                         isStartButtonHandlable = false;
                         isCreditButtonHandlable = false;
 
-                        audioSource.Raise(SO_Sound.Entity.ButtonClickSE, SType.SE);
+                        soundPlayer.Play(SoundType.General_ClickSE);
 
                         creditButtonInfo.Image.sprite = creditButtonSprites.Click;
 

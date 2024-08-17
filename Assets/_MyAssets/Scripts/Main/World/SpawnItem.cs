@@ -10,6 +10,8 @@ namespace Main.Spawn
     [RequireComponent(typeof(LineRenderer))]
     public class SpawnItem : MonoBehaviour
     {
+        [SerializeField] Transform instantiatedMushroomParent;
+
         [SerializeField, Header("リンゴの生成親")] private Transform appleParentTf;
         [SerializeField, Header("キノコの生成範囲")] private Transform mushroomSpawnRangeTf;
 
@@ -115,7 +117,7 @@ namespace Main.Spawn
             Vector3 checkPos = new Vector3(spawnPos.x, 0, spawnPos.y);
             if (Physics.Raycast(checkPos, Vector3.down, out RaycastHit hit) && hit.collider.CompareTag(tagSO.TerrainTag))
             {
-                Instantiate(kinokoInstance.objdata, hit.point, rot).transform.up = hit.normal;//地形に合わせた配置
+                Instantiate(kinokoInstance.objdata, hit.point, rot, instantiatedMushroomParent).transform.up = hit.normal;//地形に合わせた配置
             }
 
         END_KINOKO:

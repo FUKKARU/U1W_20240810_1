@@ -776,6 +776,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5932264816148750689, guid: a228c06604c52a742a973b62335b25c2,
         type: 3}
+      propertyPath: soundPlayer
+      value: 
+      objectReference: {fileID: 2095546724}
+    - target: {fileID: 5932264816148750689, guid: a228c06604c52a742a973b62335b25c2,
+        type: 3}
       propertyPath: _buttonInfoList.Array.data[0]._image
       value: 
       objectReference: {fileID: 884088290}
@@ -855,7 +860,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 650033750901335864, guid: a228c06604c52a742a973b62335b25c2, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a228c06604c52a742a973b62335b25c2, type: 3}
