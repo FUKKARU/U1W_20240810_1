@@ -73,6 +73,15 @@ namespace IA
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToggleCursor"",
+                    ""type"": ""Button"",
+                    ""id"": ""5676f4f6-38a5-4740-a865-52a2c6b6dadb"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -174,6 +183,17 @@ namespace IA
                     ""action"": ""Cancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""23f7abd4-4688-4914-98ca-8449ff6973a6"",
+                    ""path"": ""<Keyboard>/leftCtrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleCursor"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -187,6 +207,7 @@ namespace IA
             m_Main_Move = m_Main.FindAction("Move", throwIfNotFound: true);
             m_Main_Interact = m_Main.FindAction("Interact", throwIfNotFound: true);
             m_Main_Cancel = m_Main.FindAction("Cancel", throwIfNotFound: true);
+            m_Main_ToggleCursor = m_Main.FindAction("ToggleCursor", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -253,6 +274,7 @@ namespace IA
         private readonly InputAction m_Main_Move;
         private readonly InputAction m_Main_Interact;
         private readonly InputAction m_Main_Cancel;
+        private readonly InputAction m_Main_ToggleCursor;
         public struct MainActions
         {
             private @IA m_Wrapper;
@@ -262,6 +284,7 @@ namespace IA
             public InputAction @Move => m_Wrapper.m_Main_Move;
             public InputAction @Interact => m_Wrapper.m_Main_Interact;
             public InputAction @Cancel => m_Wrapper.m_Main_Cancel;
+            public InputAction @ToggleCursor => m_Wrapper.m_Main_ToggleCursor;
             public InputActionMap Get() { return m_Wrapper.m_Main; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -286,6 +309,9 @@ namespace IA
                 @Cancel.started += instance.OnCancel;
                 @Cancel.performed += instance.OnCancel;
                 @Cancel.canceled += instance.OnCancel;
+                @ToggleCursor.started += instance.OnToggleCursor;
+                @ToggleCursor.performed += instance.OnToggleCursor;
+                @ToggleCursor.canceled += instance.OnToggleCursor;
             }
 
             private void UnregisterCallbacks(IMainActions instance)
@@ -305,6 +331,9 @@ namespace IA
                 @Cancel.started -= instance.OnCancel;
                 @Cancel.performed -= instance.OnCancel;
                 @Cancel.canceled -= instance.OnCancel;
+                @ToggleCursor.started -= instance.OnToggleCursor;
+                @ToggleCursor.performed -= instance.OnToggleCursor;
+                @ToggleCursor.canceled -= instance.OnToggleCursor;
             }
 
             public void RemoveCallbacks(IMainActions instance)
@@ -329,6 +358,7 @@ namespace IA
             void OnMove(InputAction.CallbackContext context);
             void OnInteract(InputAction.CallbackContext context);
             void OnCancel(InputAction.CallbackContext context);
+            void OnToggleCursor(InputAction.CallbackContext context);
         }
     }
 }

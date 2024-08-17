@@ -248,6 +248,7 @@ namespace IA
         public InputInfo Main_MoveValue2 { get; private set; } = null;
         public InputInfo Main_InteractClick { get; private set; } = null;
         public InputInfo Main_CancelClick { get; private set; } = null;
+        public InputInfo Main_ToggleCursorClick { get; private set; } = null;
 
         private void Init()
         {
@@ -256,6 +257,7 @@ namespace IA
             Main_MoveValue2 = new InputInfo(_inputs.Main.Move, InputType.Value2).Add(inputInfoList);
             Main_InteractClick = new InputInfo(_inputs.Main.Interact, InputType.Click).Add(inputInfoList);
             Main_CancelClick = new InputInfo(_inputs.Main.Cancel, InputType.Click).Add(inputInfoList);
+            Main_ToggleCursorClick = new InputInfo(_inputs.Main.ToggleCursor, InputType.Click).Add(inputInfoList);
         }
     }
 }

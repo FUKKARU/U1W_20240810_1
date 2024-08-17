@@ -255,6 +255,18 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
+--- !u!114 &81340454 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6514731030658509930, guid: 3a79167071b18c3428f9e54360669ab4,
+    type: 3}
+  m_PrefabInstance: {fileID: 3245865665256158478}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d854f9a0114646e45a2549dbb419e0a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &295093670 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7395012079483777716, guid: e12f34bd0b336d64f8bdbc96904cd102,
@@ -809,6 +821,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 2574458656249952049, guid: ebc6d5aeac5e8394fbb06c242f5c3735,
+        type: 3}
+      propertyPath: cursorSetter
+      value: 
+      objectReference: {fileID: 81340454}
+    - target: {fileID: 5740604196125936764, guid: ebc6d5aeac5e8394fbb06c242f5c3735,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8251560906227618813, guid: ebc6d5aeac5e8394fbb06c242f5c3735,
         type: 3}
       propertyPath: m_Pivot.x
@@ -1323,6 +1345,11 @@ PrefabInstance:
       objectReference: {fileID: 632289627}
     - target: {fileID: 2889000669072611351, guid: e12f34bd0b336d64f8bdbc96904cd102,
         type: 3}
+      propertyPath: cursorSetter
+      value: 
+      objectReference: {fileID: 81340454}
+    - target: {fileID: 2889000669072611351, guid: e12f34bd0b336d64f8bdbc96904cd102,
+        type: 3}
       propertyPath: aburaageUIText
       value: 
       objectReference: {fileID: 1767237465}
@@ -1369,17 +1396,17 @@ PrefabInstance:
     - target: {fileID: 3290461379071623005, guid: e12f34bd0b336d64f8bdbc96904cd102,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.47872284
+      value: -0.4787228
       objectReference: {fileID: 0}
     - target: {fileID: 3290461379071623005, guid: e12f34bd0b336d64f8bdbc96904cd102,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.31386054
+      value: 0.31386045
       objectReference: {fileID: 0}
     - target: {fileID: 3290461379071623005, guid: e12f34bd0b336d64f8bdbc96904cd102,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.18827647
+      value: 0.18827641
       objectReference: {fileID: 0}
     - target: {fileID: 3314032087513753495, guid: e12f34bd0b336d64f8bdbc96904cd102,
         type: 3}
@@ -1819,17 +1846,17 @@ PrefabInstance:
     - target: {fileID: 8970486669106463029, guid: e12f34bd0b336d64f8bdbc96904cd102,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.4787228
+      value: -0.47872278
       objectReference: {fileID: 0}
     - target: {fileID: 8970486669106463029, guid: e12f34bd0b336d64f8bdbc96904cd102,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.31386048
+      value: 0.31386042
       objectReference: {fileID: 0}
     - target: {fileID: 8970486669106463029, guid: e12f34bd0b336d64f8bdbc96904cd102,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.18827641
+      value: 0.18827638
       objectReference: {fileID: 0}
     - target: {fileID: 9051464576399490096, guid: e12f34bd0b336d64f8bdbc96904cd102,
         type: 3}

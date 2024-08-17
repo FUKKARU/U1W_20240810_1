@@ -1,4 +1,5 @@
 using General;
+using Main.GameHandler;
 using SO;
 using System.Collections.Generic;
 using TMPro;
@@ -9,7 +10,7 @@ namespace Main.Player
 {
     public class PlayerCollect : MonoBehaviour
     {
-        [SerializeField] SoundPlayer soundPlayer;
+        [SerializeField] private SoundPlayer soundPlayer;
 
         [SerializeField] PlayerMove playerMove;
 
