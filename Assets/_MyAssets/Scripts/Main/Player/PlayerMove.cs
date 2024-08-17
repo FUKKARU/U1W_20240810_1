@@ -39,13 +39,21 @@ namespace Main.Player
         [SerializeField] private SpriteRenderer staminaGaugeSr;
         [Space(25)]
         [SerializeField] private Transform initPlaceTf;
+        [SerializeField, Header("SoundPlayer")] private General.SoundPlayer soundPlayer;
         [SerializeField, Header("ステージのボーダー")] private Border.Border stageBorder;
+        [SerializeField, Header("神社のボーダー")] private Border.Border shrineBorder;
+        [SerializeField, Header("森林のボーダー")] private Border.Border forestBorder;
+        [SerializeField, Header("村落のボーダー")] private Border.Border villageBorder;
 
         private PlayerMoveBhv impl;
 
         private void OnEnable()
         {
+            if (!soundPlayer) throw new System.Exception($"{nameof(soundPlayer)}が設定されていません");
             if (!stageBorder) throw new System.Exception($"{nameof(stageBorder)}が設定されていません");
+            if (!shrineBorder) throw new System.Exception($"{nameof(shrineBorder)}が設定されていません");
+            if (!forestBorder) throw new System.Exception($"{nameof(forestBorder)}が設定されていません");
+            if (!villageBorder) throw new System.Exception($"{nameof(villageBorder)}が設定されていません");
 
             impl = new(
                 new(figure1, figureTf1, figureRb1, headTf1, aboveHeadTf1, footTf1,
@@ -54,7 +62,7 @@ namespace Main.Player
                 staminaGaugeRoot1, stackRoot2, animator2),
                 freeLookCamera, freeLookCameraTf, stackStartPoint,
                 staminaGaugeParentTf, staminaGaugeTf, staminaGaugeSr,
-                initPlaceTf, stageBorder
+                initPlaceTf, soundPlayer, new(stageBorder, shrineBorder, forestBorder, villageBorder)
                 );
         }
 
@@ -88,13 +96,21 @@ namespace Main.Player
             Human = 2
         }
 
+        private enum Location
+        {
+            Shrine,
+            Forest,
+            Village
+        }
+
         private readonly PlayerFigure figure1;
         private readonly PlayerFigure figure2;
         private readonly PlayerStamina playerStamina;
         private Cinemachine.CinemachineFreeLook freeLookCamera;
         private Transform freeLookCameraTf;
         private Transform stackStartPoint;
-        private Border.Border stageBorder;
+        private General.SoundPlayer soundPlayer;
+        private Borders borders;
 
         private FigureIndex figureIndex = FigureIndex.Fox;  // 形態のインデックス番号
         private float moveSpeed = SO_Player.Entity.NormalSpeed;  // 移動スピード
@@ -103,6 +119,8 @@ namespace Main.Player
         private float staminaT = 0;  // スタミナ増減の時間カウンタ
         private bool isStaminaIncreasable = true;  // スタミナが回復可能かどうか
         private bool isCharging = false;  // 突進中かどうか
+        private Location location = Location.Shrine;  // 現フレームでのロケーション
+        private Location preLocation = Location.Shrine;  // 前フレームでのロケーション
 
         private bool isCheckedOnFirstUpdate = false;  // 最初のUpdateで行う、チェックのフラグ
 
@@ -111,7 +129,7 @@ namespace Main.Player
         public PlayerMoveBhv(PlayerFigure figure1, PlayerFigure figure2,
             Cinemachine.CinemachineFreeLook freeLookCamera, Transform freeLookCameraTf, Transform stackStartPoint,
             Transform staminaGaugeParentTf, Transform staminaGaugeTf, SpriteRenderer staminaGaugeSr,
-            Transform initPlaceTf, Border.Border stageBorder)
+            Transform initPlaceTf, General.SoundPlayer soundPlayer, Borders borders)
         {
             this.figure1 = figure1;
             this.figure2 = figure2;
@@ -120,7 +138,8 @@ namespace Main.Player
             this.stackStartPoint = stackStartPoint;
             initPosition = initPlaceTf.position;
             prePosition = initPosition;
-            this.stageBorder = stageBorder;
+            this.soundPlayer = soundPlayer;
+            this.borders = borders;
 
             figure1.FigureTf.position = initPosition;
             figure2.FigureTf.position = initPosition;
@@ -136,27 +155,34 @@ namespace Main.Player
             figure1.Dispose();
             figure2.Dispose();
             playerStamina.Dispose();
+            borders.Dispose();
             freeLookCamera = null;
             freeLookCameraTf = null;
             stackStartPoint = null;
-            stageBorder = null;
+            soundPlayer = null;
         }
 
         public void Update()
         {
             if (figure1.IsNullExist()) return;
             if (figure2.IsNullExist()) return;
+            if (playerStamina.IsNullExist()) return;
+            if (borders.IsNullExist()) return;
             if (!freeLookCamera) return;
             if (!freeLookCameraTf) return;
             if (!stackStartPoint) return;
-            if (!stageBorder) return;
+            if (!soundPlayer) return;
 
             if (!isCheckedOnFirstUpdate)
             {
                 isCheckedOnFirstUpdate = true;
 
-                if (!stageBorder.IsIn(initPosition))
+                if (!borders.StageBorder.IsIn(initPosition))
                     throw new System.Exception($"プレイヤーの初期座標 {initPosition} が、ステージの範囲内にありません");
+
+                location = GetLocation(GetFigure(figureIndex).FigureTf.position);
+                PlayBGM(location);
+                preLocation = location;
             }
 
             // 変身
@@ -179,6 +205,9 @@ namespace Main.Player
 
             // 積み上げる場所を更新
             UpdateStackStartPointBhv();
+
+            // ロケーションの更新 + それに伴う処理
+            UpdateLocationBhv();
         }
 
         // 引数以外のインデックスをすべて取得
@@ -213,6 +242,14 @@ namespace Main.Player
             return figureIndex == FigureIndex.Fox;
         }
 
+        private Location GetLocation(Vector3 pos)
+        {
+            if (borders.ShrineBorder.IsIn(pos)) return Location.Shrine;
+            else if (borders.ForestBorder.IsIn(pos)) return Location.Forest;
+            else if (borders.VillageBorder.IsIn(pos)) return Location.Village;
+            else throw new System.Exception("プレイヤーが不正な場所にいます");
+        }
+
         // oldIからnewIに形態変化
         private void ChangeFigure(FigureIndex oldI, FigureIndex newI)
         {
@@ -224,6 +261,20 @@ namespace Main.Player
             freeLookCamera.GetRig(0).m_LookAt = GetFigure(newI).FootTf;
             freeLookCamera.GetRig(1).m_LookAt = GetFigure(newI).HeadTf;
             freeLookCamera.GetRig(2).m_LookAt = GetFigure(newI).AboveHeadTf;
+        }
+
+        // 与えられたロケーションに対応するBGMを再生する
+        private void PlayBGM(Location location)
+        {
+            General.SoundType soundType = location switch
+            {
+                Location.Shrine => General.SoundType.Main_ShrineBGM,
+                Location.Forest => General.SoundType.Main_ForestBGM,
+                Location.Village => General.SoundType.Main_VillageBGM,
+                _ => throw new System.Exception("プレイヤーが不正な場所にいます")
+            };
+
+            soundPlayer.Play(soundType);
         }
 
         // 突進状態を切り替える。trueなら突進状態にし、falseなら突進状態でなくする。
@@ -314,7 +365,7 @@ namespace Main.Player
                 Vector3 moveValueLocal = moveValueLocalNormed * (moveSpeed * Time.deltaTime);
                 Vector3 moveValue = fgr.FigureTf.right * moveValueLocal.x + fgr.FigureTf.forward * moveValueLocal.z;
                 fgr.FigureTf.position += moveValue;
-                if (!stageBorder.IsIn(fgr.FigureTf.position)) fgr.FigureTf.position = prePosition;
+                if (!borders.StageBorder.IsIn(fgr.FigureTf.position)) fgr.FigureTf.position = prePosition;
                 prePosition = fgr.FigureTf.position;
 
                 // 他の形態を現在の形態にコンストレイン
@@ -375,6 +426,18 @@ namespace Main.Player
         {
             PlayerFigure fgr = GetFigure(figureIndex);
             playerStamina.SetGaugeParent(fgr.FigureTf, fgr.StaminaGaugeRoot.localPosition);
+        }
+
+        // ロケーションの更新 + それに伴う処理 を行う
+        private void UpdateLocationBhv()
+        {
+            location = GetLocation(GetFigure(figureIndex).FigureTf.position);
+
+            // ロケーションが変わったら、BGMを変更
+            if (location != preLocation)
+                PlayBGM(location);
+
+            preLocation = location;
         }
     }
 
@@ -462,6 +525,15 @@ namespace Main.Player
             gaugeSr = null;
         }
 
+        internal bool IsNullExist()
+        {
+            if (!gaugeParentTf) return true;
+            if (!gaugeTf) return true;
+            if (!gaugeSr) return true;
+
+            return false;
+        }
+
         // スタミナを増やす。この処理でスタミナが最大に「なった」時のみ、trueを返す。
         internal bool IncreaseStamina(int diff)
         {
@@ -530,6 +602,48 @@ namespace Main.Player
 
         // スタミナが最小ならtrue、そうでないならfalse。
         internal bool IsStaminaZero() { return stamina == 0; }
+    }
+
+    internal sealed class Borders : System.IDisposable
+    {
+        private Border.Border _stageBorder;
+        internal Border.Border StageBorder => _stageBorder;
+
+        private Border.Border _shrineBorder;
+        internal Border.Border ShrineBorder => _shrineBorder;
+
+        private Border.Border _forestBorder;
+        internal Border.Border ForestBorder => _forestBorder;
+
+        private Border.Border _villageBorder;
+        internal Border.Border VillageBorder => _villageBorder;
+
+        internal Borders(Border.Border stageBorder,
+            Border.Border shrineBorder, Border.Border forestBorder, Border.Border villageBorder)
+        {
+            this._stageBorder = stageBorder;
+            this._shrineBorder = shrineBorder;
+            this._forestBorder = forestBorder;
+            this._villageBorder = villageBorder;
+        }
+
+        public void Dispose()
+        {
+            _stageBorder = null;
+            _shrineBorder = null;
+            _forestBorder = null;
+            _villageBorder = null;
+        }
+
+        internal bool IsNullExist()
+        {
+            if (!_stageBorder) return true;
+            if (!_shrineBorder) return true;
+            if (!_forestBorder) return true;
+            if (!_villageBorder) return true;
+
+            return false;
+        }
     }
 
     internal static class Ex

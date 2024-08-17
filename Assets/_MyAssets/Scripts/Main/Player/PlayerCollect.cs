@@ -146,7 +146,7 @@ namespace Main.Player
 
         public void GetAburaage(int usedAppleNum, int usedKinokoNum)//–û—g‚°æ“¾‚ÌÛ‚Ìˆ—
         {
-            soundPlayer.Play(SoundType.General_ClickSE);
+            soundPlayer.Play(SoundType.Main_TradeDoneSE);
 
             kinokoNum -= usedKinokoNum;
             appleNum -= usedAppleNum;
@@ -178,6 +178,7 @@ namespace Main.Player
 
             if (other.gameObject.tag == tagSO.KinokoTag)
             {
+                soundPlayer.Play(SoundType.Main_ItemGetSE);
                 kinokoNum++;
                 Spawn.SpawnItem.Instance.KinokoNumDec();
                 collectedObjects.Add(other.gameObject);
@@ -199,6 +200,7 @@ namespace Main.Player
 
             if (collision.gameObject.tag == tagSO.AppleTag)
             {
+                soundPlayer.Play(SoundType.Main_ItemGetSE);
                 appleNum++;
                 collision.gameObject.GetComponent<SphereCollider>().enabled = false;
                 collision.gameObject.GetComponent<Rigidbody>().isKinematic = true;
