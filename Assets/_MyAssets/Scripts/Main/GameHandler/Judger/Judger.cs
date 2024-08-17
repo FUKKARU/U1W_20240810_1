@@ -1,3 +1,5 @@
+using SO;
+using TMPro;
 using UnityEngine;
 
 namespace Main.GameHandler
@@ -11,11 +13,14 @@ namespace Main.GameHandler
 
     public sealed class Judger : MonoBehaviour
     {
+        [SerializeField] private TextMeshProUGUI resultText;
+        [SerializeField] private Counter counter;
+
         private JudgerBhv impl;
 
         private void OnEnable()
         {
-            impl = new();
+            impl = new(resultText, counter);
         }
 
         private void OnDisable()
@@ -47,21 +52,29 @@ namespace Main.GameHandler
 
     internal sealed class JudgerBhv : System.IDisposable
     {
+        private TextMeshProUGUI resultText;
+        private Counter counter;
+
         private Result result;
 
-        internal JudgerBhv()
+        internal JudgerBhv(TextMeshProUGUI resultText, Counter counter)
         {
+            this.resultText = resultText;
+            this.counter = counter;
+
             result = Result.Undone;
         }
 
         public void Dispose()
         {
-
+            resultText = null;
+            counter = null;
         }
 
         internal void Update()
         {
-
+            if (!resultText) return;
+            if (!counter) return;
         }
 
         internal Result GetResult()
@@ -87,12 +100,29 @@ namespace Main.GameHandler
 
         private void GameOverBhv()
         {
-            Debug.Log("Game Over");
+            SetResultText(SO_Judge.Entity.GameOverMessage);
+            WaitAndGoToTitle();
         }
 
         private void GameClearBhv()
         {
-            Debug.Log("Game Clear");
+            SetResultText(SO_Judge.Entity.GameClearMessage);
+            WaitAndGoToTitle();
+        }
+
+        private void SetResultText(string message)
+        {
+            resultText.text = message;
+        }
+
+        private void WaitAndGoToTitle()
+        {
+            Wait(() => General.Flow.SceneChange(SO_SceneName.Entity.Title, false), SO_Judge.Entity.BeforeGoToTitleDur);
+        }
+
+        private void Wait(System.Action action, float waitSeconds)
+        {
+            counter.Wait(action, waitSeconds);
         }
     }
 }

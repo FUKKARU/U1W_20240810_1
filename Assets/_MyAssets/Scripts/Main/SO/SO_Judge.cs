@@ -40,5 +40,14 @@ namespace SO
 
         [SerializeField, Header("兵十にどのくらい近づいたら、クリアの判定を行うことができるか")] private float _goalDistance;
         public float GoalDistance => _goalDistance;
+
+        [SerializeField, TextArea(1, 1000), Header("ゲームクリアのメッセージ")] private string _gameClearMessage;
+        public string GameClearMessage => _gameClearMessage;
+
+        [SerializeField, TextArea(1, 1000), Header("ゲームオーバーのメッセージ")] private string _gameOverMessage;
+        public string GameOverMessage => _gameOverMessage;
+
+        [SerializeField, Header("ゲームが終了してから何秒後にタイトルに戻るか")] private float _beforeGoToTitleDur;
+        public float BeforeGoToTitleDur => _beforeGoToTitleDur;
     }
 }
