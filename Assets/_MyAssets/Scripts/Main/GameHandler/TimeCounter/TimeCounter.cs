@@ -1,7 +1,6 @@
 using UnityEngine;
 using TMPro;
 using SO;
-using UnityEditor.PackageManager;
 
 namespace Main.GameHandler
 {
@@ -119,6 +118,12 @@ namespace Main.GameHandler
         {
             float y = (x - a) * (d - c) / (b - a) + c;
             return y;
+        }
+
+        internal static System.Collections.IEnumerator Wait(System.Action action, float waitSeconds)
+        {
+            yield return new WaitForSeconds(waitSeconds);
+            action();
         }
     }
 }

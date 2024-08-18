@@ -136,7 +136,7 @@ namespace Credit.Button
 
     #region
 
-    internal static class ButtonExMethods
+    internal static class Ex
     {
         /// <summary>
         /// EventTrigger‚ÉƒCƒxƒ“ƒg‚ð“o˜^‚·‚é
@@ -147,6 +147,12 @@ namespace Credit.Button
             entry.eventID = type;
             entry.callback.AddListener((eventData) => { action(); });
             eventTrigger.triggers.Add(entry);
+        }
+
+        internal static System.Collections.IEnumerator Wait(System.Action action, float waitSeconds)
+        {
+            yield return new WaitForSeconds(waitSeconds);
+            action();
         }
     }
 

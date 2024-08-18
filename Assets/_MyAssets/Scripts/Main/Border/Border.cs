@@ -27,7 +27,7 @@ namespace Main.Border
         {
             System.Action action = GetState() switch
             {
-                State.Editor_Editing => () => General.Ex.Pass(),
+                State.Editor_Editing => () => Ex.Pass(),
                 State.Editor_Playing => () => UpdatePins(),
                 State.Build => () => UpdatePins(),
                 _ => throw new System.Exception("–³Œø‚È’l‚Å‚·")
@@ -39,7 +39,7 @@ namespace Main.Border
         {
             System.Action action = GetState() switch
             {
-                State.Editor_Editing => () => General.Ex.Pass(),
+                State.Editor_Editing => () => Ex.Pass(),
                 State.Editor_Playing => () => Dispose(),
                 State.Build => () => Dispose(),
                 _ => throw new System.Exception("–³Œø‚È’l‚Å‚·")
@@ -52,8 +52,8 @@ namespace Main.Border
             System.Action action = GetState() switch
             {
                 State.Editor_Editing => () => UpdatePins(),
-                State.Editor_Playing => () => General.Ex.Pass(),
-                State.Build => () => General.Ex.Pass(),
+                State.Editor_Playing => () => Ex.Pass(),
+                State.Build => () => Ex.Pass(),
                 _ => throw new System.Exception("–³Œø‚È’l‚Å‚·")
             };
             action();
@@ -205,6 +205,11 @@ namespace Main.Border
         internal static float Cross(this (Vector2 a, Vector2 b) v)
         {
             return v.a.x * v.b.y - v.a.y * v.b.x;
+        }
+
+        internal static void Pass()
+        {
+            return;
         }
     }
 }

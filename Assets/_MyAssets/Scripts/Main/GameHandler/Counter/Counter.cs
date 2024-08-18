@@ -6,7 +6,7 @@ namespace Main.GameHandler
     {
         internal void Wait(System.Action action, float waitSeconds)
         {
-            StartCoroutine(General.Ex.Wait(action, waitSeconds));
+            StartCoroutine(Ex.Wait(action, waitSeconds));
         }
     }
 }

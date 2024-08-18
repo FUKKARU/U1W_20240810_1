@@ -1,22 +1,10 @@
-using System;
-using System.Collections;
 using UnityEditor;
-using UnityEngine;
 
 namespace General
 {
     public static class Ex
     {
-        public static void Pass()
-        {
-            return;
-        }
-
-        public static IEnumerator Wait(Action action, float waitSeconds)
-        {
-            yield return new WaitForSeconds(waitSeconds);
-            action();
-        }
+#if UNITY_EDITOR
 
         internal static class CustomMenuItem
         {
@@ -91,5 +79,7 @@ namespace General
                 ProjectWindowUtil.CreateScriptAssetFromTemplateFile(templateFilePath, newScriptName);
             }
         }
+
+#endif
     }
 }

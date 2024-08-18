@@ -1,5 +1,6 @@
 using General;
 using SO;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -334,6 +335,15 @@ namespace Title.Button
         {
             _image = null;
             _eventTrigger = null;
+        }
+    }
+
+    internal static class Ex
+    {
+        internal static IEnumerator Wait(System.Action action, float waitSeconds)
+        {
+            yield return new WaitForSeconds(waitSeconds);
+            action();
         }
     }
 
