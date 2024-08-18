@@ -6,7 +6,16 @@
             "id": "7d3322de-7b19-4c54-af3d-b6c802e81f0e",
             "actions": [
                 {
-                    "name": "Charge",
+                    "name": "Move",
+                    "type": "Value",
+                    "id": "59db8909-9ec2-4977-96ab-108b00b7b6f4",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Dash",
                     "type": "Button",
                     "id": "44ae81c5-a6b6-41df-9b20-dda074acd7d2",
                     "expectedControlType": "Button",
@@ -24,33 +33,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Move",
-                    "type": "Value",
-                    "id": "59db8909-9ec2-4977-96ab-108b00b7b6f4",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "Interact",
-                    "type": "Button",
-                    "id": "d00da5c4-cdf9-4784-a84c-ad5e8d73ea64",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Cancel",
-                    "type": "Button",
-                    "id": "c1903215-fad9-4d39-afd6-b083c32296c8",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "ToggleCursor",
                     "type": "Button",
                     "id": "5676f4f6-38a5-4740-a865-52a2c6b6dadb",
@@ -61,28 +43,6 @@
                 }
             ],
             "bindings": [
-                {
-                    "name": "",
-                    "id": "5200b73f-42cb-4083-ada3-29244e1037bd",
-                    "path": "<Keyboard>/leftShift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Charge",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "b8d4fd8f-a9e6-443e-9e1f-e03dc1a85006",
-                    "path": "<Keyboard>/space",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Transform",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
                 {
                     "name": "2D Vector",
                     "id": "4c6d7016-ad6f-435f-9627-fe988e388c64",
@@ -140,34 +100,34 @@
                 },
                 {
                     "name": "",
-                    "id": "511a97f1-0826-4687-999d-0eff664f38e1",
-                    "path": "<Keyboard>/f",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Interact",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "e2a0036a-b2a4-40f4-bed7-6f670133033e",
-                    "path": "<Keyboard>/c",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Cancel",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "23f7abd4-4688-4914-98ca-8449ff6973a6",
                     "path": "<Keyboard>/leftCtrl",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "ToggleCursor",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5200b73f-42cb-4083-ada3-29244e1037bd",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b8d4fd8f-a9e6-443e-9e1f-e03dc1a85006",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Transform",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

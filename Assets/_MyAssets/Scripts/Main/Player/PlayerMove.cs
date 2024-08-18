@@ -386,7 +386,7 @@ namespace Main.Player
 
             // 突進キーの入力状態によって、もし可能ならば、突進状態を更新する。
             // 特に、突進キーが離されたとき、スタミナの回復を可能にする。([A]に対応する処理)
-            if (InputGetter.Instance.Main_ChargeValue0.Get<bool>()) { SetCharge(true); }
+            if (InputGetter.Instance.Main_DashValue0.Get<bool>()) { SetCharge(true); }
             else { isStaminaIncreasable = true; SetCharge(false); }
 
             // 一定時間毎にスタミナを増減させる。
