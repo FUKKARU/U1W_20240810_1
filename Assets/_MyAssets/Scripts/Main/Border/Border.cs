@@ -151,6 +151,43 @@ namespace Main.Border
         {
             return IsIn(pos.XOZ2XY());
         }
+
+        /// <summary>
+        /// ボーダー内のランダムな座標を返す(y座標は0)
+        /// </summary>
+        internal Vector3 GetRandomPosition()
+        {
+            if (pinList == null) throw new System.Exception($"{pinList}がnullです");
+            if (pinList.Count <= 2) throw new System.Exception($"{pinList}の要素の数が2つ以下です");
+
+            float minFloat = -10000;
+            float maxFloat = 10000;
+
+            float minX = maxFloat;
+            float maxX = minFloat;
+            float minY = maxFloat;
+            float maxY = minFloat;
+            foreach (Transform e in pinList)
+            {
+                Vector2 p = e.position.XOZ2XY();
+
+                minX = Mathf.Min(minX, p.x);
+                maxX = Mathf.Max(maxX, p.x);
+                minY = Mathf.Min(minY, p.y);
+                maxY = Mathf.Max(maxY, p.y);
+            }
+
+            Vector2 pos = new(minFloat, minFloat);
+            while (true)
+            {
+                if (IsIn(pos))
+                    break;
+                else
+                    pos = new(Random.Range(minX, maxX), Random.Range(minY, maxY));
+            }
+
+            return pos.XY2XOZ();
+        }
     }
 
     internal static class Ex

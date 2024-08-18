@@ -7,24 +7,21 @@ using Random = UnityEngine.Random;
 
 namespace Main.Spawn
 {
-    [RequireComponent(typeof(LineRenderer))]
     public class SpawnItem : MonoBehaviour
     {
         [SerializeField] Transform instantiatedMushroomParent;
 
         [SerializeField, Header("リンゴの生成親")] private Transform appleParentTf;
-        [SerializeField, Header("キノコの生成範囲")] private Transform mushroomSpawnRangeTf;
+        [SerializeField, Header("キノコの生成範囲ボーダー")] private Border.Border mushroomBorder;
 
         SO_Spawner spawnerSO;
         SO_Tag tagSO;
         public static SpawnItem Instance { get; set; } = null;
 
-        [NonSerialized] public List<GameObject> spawnRange = new List<GameObject>();
         LineRenderer lineRenderer;
         SO_Spawner spawner;
 
         public int kinokoCreatedNum { get; private set; } = 0;
-        List<Vector2> spawnRangeVector;
         SpawnObj kinokoInstance;
 
 
@@ -46,13 +43,9 @@ namespace Main.Spawn
             {
                 Destroy(gameObject);
             }
+
             spawnerSO = SO_Spawner.Entity;
             tagSO = SO_Tag.Entity;
-            spawnRangeVector = new List<Vector2>();
-            foreach (Transform child in mushroomSpawnRangeTf)
-            {
-                spawnRange.Add(child.gameObject);
-            }
             foreach (Transform child in appleParentTf)
             {
                 if (child.CompareTag(tagSO.TreeTag))
@@ -60,70 +53,38 @@ namespace Main.Spawn
                     appleTrees.Add(child.gameObject);
                 }
             }
-
-            lineRenderer = GetComponent<LineRenderer>();
-            lineRenderer.startWidth = lineRenderer.endWidth = spawnerSO.RangeWidth;
-            lineRenderer.startColor = lineRenderer.endColor = spawnerSO.RangeColor;
-            lineRenderer.positionCount = spawnRange.Count + 1;
         }
         void Start()
         {
             if (!appleParentTf) throw new Exception($"{nameof(appleParentTf)}が設定されていません");
-            if (!mushroomSpawnRangeTf) throw new Exception($"{nameof(mushroomSpawnRangeTf)}が設定されていません");
+            if (!mushroomBorder) throw new Exception($"{nameof(mushroomBorder)}が設定されていません");
 
-            CreatePoints();
-            minMaxRange = FindRangeMinMax(spawnRangeVector);
             kinokoInstance = spawnerSO.GetInstanceByName("Kinoko");
             appleInstance = spawnerSO.GetInstanceByName("Apple");
             StartCoroutine(CreateKinoko());
             StartCoroutine(CreateApple());
-        }
-        void Update()
-        {
-            if (spawnerSO.ShowKinokoRange)
-            {
-                lineRenderer.enabled = true;
-                DrawSpawnRange();
-                foreach (GameObject go in spawnRange)
-                {
-                    go.GetComponent<MeshRenderer>().enabled = true;
-                }
-            }
-            else
-            {
-                lineRenderer.enabled = false;
-                foreach (GameObject go in spawnRange)
-                {
-                    go.GetComponent<MeshRenderer>().enabled = false;
-                }
-            }
-
         }
 
         #region kinoko
         //キノコ生成
         IEnumerator CreateKinoko()
         {
-            Vector2 spawnPos;
-            if (kinokoCreatedNum >= spawnerSO.ＭaxKinokoNum) goto END_KINOKO;
-            do
+            if (kinokoCreatedNum < spawnerSO.ＭaxKinokoNum)
             {
-                spawnPos = new Vector2(
-                Random.Range(minMaxRange.minX, minMaxRange.maxX),
-                Random.Range(minMaxRange.minY, minMaxRange.maxY));
-            } while (CheckSpawnPoint(spawnPos) == false);
-            kinokoCreatedNum++;
-            Quaternion rot = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);//ランダムな回転を与える
-            Vector3 checkPos = new Vector3(spawnPos.x, 0, spawnPos.y);
-            if (Physics.Raycast(checkPos, Vector3.down, out RaycastHit hit) && hit.collider.CompareTag(tagSO.TerrainTag))
-            {
-                Instantiate(kinokoInstance.objdata, hit.point, rot, instantiatedMushroomParent).transform.up = hit.normal;//地形に合わせた配置
+                kinokoCreatedNum++;
+                Vector3 checkPos = mushroomBorder.GetRandomPosition();
+                Quaternion rot = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);  //ランダムな回転を与える
+                if (Physics.Raycast(checkPos, Vector3.down, out RaycastHit hit) && hit.collider.CompareTag(tagSO.TerrainTag))
+                {
+                    Instantiate(kinokoInstance.objdata, hit.point, rot, instantiatedMushroomParent).transform.up = hit.normal;//地形に合わせた配置
+                }
             }
 
-        END_KINOKO:
             yield return new WaitForSeconds(kinokoInstance.createOffsetTime);
             StartCoroutine(CreateKinoko());
         }
+
+#if false
         //キノコの生成可能範囲生成
         void CreatePoints()
         {
@@ -187,6 +148,7 @@ namespace Main.Spawn
             }
             return ((int)windingNum % 2) != 0;
         }
+
         //生成可能範囲を描画
         void DrawSpawnRange()
         {
@@ -196,6 +158,8 @@ namespace Main.Spawn
             }
             lineRenderer.SetPosition(spawnRange.Count, spawnRange[0].transform.position);
         }
+#endif
+
         //プレイヤーがキノコを取得した際
         public void KinokoNumDec()
         {
