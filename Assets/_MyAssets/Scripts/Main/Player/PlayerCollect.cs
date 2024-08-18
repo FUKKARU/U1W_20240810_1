@@ -86,11 +86,17 @@ namespace Main.Player
             for (int i = 0; i < collectedObjects.Count; i++)
             {
                 GameObject obj = collectedObjects[i];
+
+                // 油揚げ以外ならば、きらきらストップ
+                try { obj.GetComponentInChildren<ParticleSystem>().Stop(); }
+                catch (System.NullReferenceException) { }
+
                 obj.transform.position = stackStartPoint.position + new Vector3(0, height, 0);
-                if (obj.tag == tagSO.AppleTag) height += 0.25f;
-                else if (obj.tag == tagSO.KinokoTag) height += 0.45f;
                 obj.transform.localRotation = Quaternion.identity;
                 obj.transform.parent = stackStartPoint;
+
+                if (obj.CompareTag(tagSO.AppleTag)) height += 0.25f;
+                else if (obj.CompareTag(tagSO.KinokoTag)) height += 0.45f;
             }
         }
 

@@ -135,12 +135,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &330963253 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2290829637794764087, guid: e12f34bd0b336d64f8bdbc96904cd102,
-    type: 3}
-  m_PrefabInstance: {fileID: 2937049815545360495}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -780,75 +774,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2418671912639763917, guid: ebc6d5aeac5e8394fbb06c242f5c3735,
-        type: 3}
-      propertyPath: m_text
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 2418671912639763917, guid: ebc6d5aeac5e8394fbb06c242f5c3735,
-        type: 3}
-      propertyPath: m_fontSize
-      value: 72
-      objectReference: {fileID: 0}
-    - target: {fileID: 2418671912639763917, guid: ebc6d5aeac5e8394fbb06c242f5c3735,
-        type: 3}
-      propertyPath: m_fontSizeBase
-      value: 72
-      objectReference: {fileID: 0}
-    - target: {fileID: 2418671912639763917, guid: ebc6d5aeac5e8394fbb06c242f5c3735,
-        type: 3}
-      propertyPath: m_VerticalAlignment
-      value: 256
-      objectReference: {fileID: 0}
-    - target: {fileID: 2418671912639763917, guid: ebc6d5aeac5e8394fbb06c242f5c3735,
-        type: 3}
-      propertyPath: m_HorizontalAlignment
-      value: 4
-      objectReference: {fileID: 0}
     - target: {fileID: 2444532888325398533, guid: ebc6d5aeac5e8394fbb06c242f5c3735,
         type: 3}
       propertyPath: m_Name
       value: Canvas
-      objectReference: {fileID: 0}
-    - target: {fileID: 6633284950535755762, guid: ebc6d5aeac5e8394fbb06c242f5c3735,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6633284950535755762, guid: ebc6d5aeac5e8394fbb06c242f5c3735,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6633284950535755762, guid: ebc6d5aeac5e8394fbb06c242f5c3735,
-        type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6633284950535755762, guid: ebc6d5aeac5e8394fbb06c242f5c3735,
-        type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6633284950535755762, guid: ebc6d5aeac5e8394fbb06c242f5c3735,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 800
-      objectReference: {fileID: 0}
-    - target: {fileID: 6633284950535755762, guid: ebc6d5aeac5e8394fbb06c242f5c3735,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 200
-      objectReference: {fileID: 0}
-    - target: {fileID: 6633284950535755762, guid: ebc6d5aeac5e8394fbb06c242f5c3735,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -400
-      objectReference: {fileID: 0}
-    - target: {fileID: 6633284950535755762, guid: ebc6d5aeac5e8394fbb06c242f5c3735,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -100
       objectReference: {fileID: 0}
     - target: {fileID: 8251560906227618813, guid: ebc6d5aeac5e8394fbb06c242f5c3735,
         type: 3}
@@ -1319,11 +1248,6 @@ PrefabInstance:
       objectReference: {fileID: 3245865665256158480}
     - target: {fileID: 2889000669072611351, guid: e12f34bd0b336d64f8bdbc96904cd102,
         type: 3}
-      propertyPath: hyojuTf
-      value: 
-      objectReference: {fileID: 330963253}
-    - target: {fileID: 2889000669072611351, guid: e12f34bd0b336d64f8bdbc96904cd102,
-        type: 3}
       propertyPath: appleUIText
       value: 
       objectReference: {fileID: 1397858357}
@@ -1425,17 +1349,17 @@ PrefabInstance:
     - target: {fileID: 6991252871816988172, guid: e12f34bd0b336d64f8bdbc96904cd102,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.5151119
+      value: -0.51511186
       objectReference: {fileID: 0}
     - target: {fileID: 6991252871816988172, guid: e12f34bd0b336d64f8bdbc96904cd102,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.30481884
+      value: 0.30481893
       objectReference: {fileID: 0}
     - target: {fileID: 6991252871816988172, guid: e12f34bd0b336d64f8bdbc96904cd102,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.20258778
+      value: 0.20258792
       objectReference: {fileID: 0}
     - target: {fileID: 8087324852454208990, guid: e12f34bd0b336d64f8bdbc96904cd102,
         type: 3}
