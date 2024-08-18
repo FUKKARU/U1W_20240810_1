@@ -17,11 +17,11 @@ MonoBehaviour:
   - {fileID: 24300002, guid: cbab0fd1916234c42a3b279024e7504e, type: 2}
   - {fileID: -8547118470533645168, guid: cbab0fd1916234c42a3b279024e7504e, type: 2}
   - {fileID: -5863054128211281133, guid: cbab0fd1916234c42a3b279024e7504e, type: 2}
-  _titleBGM: {fileID: 0}
+  _titleBGM: {fileID: 8300000, guid: eae9df3f8b2de674b9c8203138c4293b, type: 3}
   _mainBGMList:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 8300000, guid: eae9df3f8b2de674b9c8203138c4293b, type: 3}
+  - {fileID: 8300000, guid: a694c0580490ac2499a30d8ec4c569a3, type: 3}
+  - {fileID: 8300000, guid: 631dbff2978d6a24daca15f8e84c9e37, type: 3}
   _buttonClickSE: {fileID: 8300000, guid: 1e461de082de72e43bfe87ca37ef74fb, type: 3}
   _itemGetSE: {fileID: 8300000, guid: 2219570ccc6f42e49a0159129cde8bf7, type: 3}
   _tradeDoneSE: {fileID: 8300000, guid: 2219570ccc6f42e49a0159129cde8bf7, type: 3}
