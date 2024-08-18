@@ -86,6 +86,11 @@ namespace Main.Player
         {
             return impl.IsFoxFigure();
         }
+
+        internal void SetLookAroundable(bool isAble)
+        {
+            impl.IsLookAroundable = isAble;
+        }
     }
 
     internal sealed class PlayerMoveBhv : System.IDisposable
@@ -125,6 +130,8 @@ namespace Main.Player
         private bool isCheckedOnFirstUpdate = false;  // 最初のUpdateで行う、チェックのフラグ
 
         private static readonly string IS_MOVING_PARAM = "IsMoving";
+
+        internal bool IsLookAroundable { get; set; } = true;  // カメラの2軸入力を受け付けるかどうか
 
         public PlayerMoveBhv(PlayerFigure figure1, PlayerFigure figure2,
             Cinemachine.CinemachineFreeLook freeLookCamera, Transform freeLookCameraTf, Transform stackStartPoint,
@@ -190,6 +197,9 @@ namespace Main.Player
 
             // 慣性を消す
             ResetInertiaBhv();
+
+            // 視点移動に対する入力の可否を切り替え
+            UpdateLookAroundableBhv();
 
             // 回転・移動
             TurnBhv();
@@ -326,6 +336,13 @@ namespace Main.Player
             Vector3 vel = GetFigure(figureIndex).FigureRb.velocity;
             vel.x = 0; vel.z = 0;
             GetFigure(figureIndex).FigureRb.velocity = vel;
+        }
+
+        // 視点移動に対する入力の可否を切り替える
+        private void UpdateLookAroundableBhv()
+        {
+            freeLookCamera.m_XAxis.m_InputAxisName = IsLookAroundable ? "Mouse X" : "";
+            freeLookCamera.m_YAxis.m_InputAxisName = IsLookAroundable ? "Mouse Y" : "";
         }
 
         // プレイヤーをカメラの方向に回転させる

@@ -4,9 +4,16 @@ namespace Main.GameHandler
 {
     public sealed class CursorSetter : MonoBehaviour
     {
+        [SerializeField] Player.PlayerMove playerMove;
+
         private bool isCursorOn = true;
 
         private void OnEnable()
+        {
+            if (!playerMove) throw new System.Exception($"{nameof(playerMove)}Ç™ê›íËÇ≥ÇÍÇƒÇ¢Ç‹ÇπÇÒ");
+        }
+
+        private void Start()
         {
             UpdateCursor(false);
         }
@@ -20,6 +27,7 @@ namespace Main.GameHandler
         private void OnDisable()
         {
             UpdateCursor(true);
+            playerMove = null;
         }
 
         private void ToggleCursor()
@@ -29,6 +37,8 @@ namespace Main.GameHandler
 
         private void UpdateCursor(bool isActive)
         {
+            playerMove.SetLookAroundable(!isActive);
+
             if (isActive)
             {
                 Cursor.lockState = CursorLockMode.None;

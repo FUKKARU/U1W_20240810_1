@@ -1028,6 +1028,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1806758917 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4204253764009354142, guid: e12f34bd0b336d64f8bdbc96904cd102,
+    type: 3}
+  m_PrefabInstance: {fileID: 2937049815545360495}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fdae9b3b7032e84bae00efa2aaf54e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1855627543 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8067838352411729346, guid: ebc6d5aeac5e8394fbb06c242f5c3735,
@@ -1475,6 +1487,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6514731030658509930, guid: 3a79167071b18c3428f9e54360669ab4,
+        type: 3}
+      propertyPath: playerMove
+      value: 
+      objectReference: {fileID: 1806758917}
     - target: {fileID: 7798860008744132226, guid: 3a79167071b18c3428f9e54360669ab4,
         type: 3}
       propertyPath: sun
