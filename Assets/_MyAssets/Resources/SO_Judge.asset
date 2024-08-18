@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c00ab92c2bebadb4db666c36822945c1, type: 3}
   m_Name: SO_Judge
   m_EditorClassIdentifier: 
-  _timeLimit: 60
+  _timeLimit: 180
   _sunAngles: {x: -90, y: 10}
   _aburaageGoalNum: 0
   _goalDistance: 3

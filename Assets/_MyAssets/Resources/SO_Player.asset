@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a24516e76e48f2341ae4724b6a2c3e16, type: 3}
   m_Name: SO_Player
   m_EditorClassIdentifier: 
-  _g: 9.81
   _moveSpeed: {x: 5, y: 10}
   _maxStamina: 100
   _staminaChangeDur: 0.1
-  _staminaChangeDiff: {x: 5, y: 5}
+  _staminaChangeDiff: {x: 5, y: 2}
