@@ -37,7 +37,7 @@ namespace Main.GameHandler
 
         private void UpdateCursor(bool isActive)
         {
-            playerMove.SetLookAroundable(!isActive);
+            if (playerMove) playerMove.SetLookAroundable(!isActive);
 
             if (isActive)
             {
