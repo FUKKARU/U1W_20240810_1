@@ -36,15 +36,6 @@ namespace SO
         [SerializeField, Header("ƒLƒmƒR‚ÌÅ‘å”")] int maxKinokoNum;
         public int ‚laxKinokoNum => maxKinokoNum;
 
-        [SerializeField, Header("ƒLƒmƒR‚Ì¶¬”ÍˆÍ‚ð•`‰æ‚·‚é‚©")] bool showKinokoRange;
-        public bool ShowKinokoRange => showKinokoRange;
-
-        [SerializeField, Header("ƒLƒmƒR‚Ì¶¬”ÍˆÍ‚ð•`‰æ‚·‚éü‚Ì’·‚³")] float rangeWidth;
-        public float RangeWidth => rangeWidth;
-
-        [SerializeField, Header("ƒLƒmƒR‚Ì¶¬”ÍˆÍ‚ð•`‰æ‚·‚éü‚ÌF")] Color rangeColor;
-        public Color RangeColor => rangeColor;
-
         [SerializeField, Header("ƒŠƒ“ƒS‚ªŽÀ‚éêŠ‚P‚Ì–¼‘O")] string applePos1;
         public string ApplePos1 => applePos1;
 

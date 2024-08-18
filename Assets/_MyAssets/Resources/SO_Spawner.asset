@@ -26,9 +26,6 @@ MonoBehaviour:
       type: 3}
     createOffsetTime: 0
   maxKinokoNum: 40
-  showKinokoRange: 0
-  rangeWidth: 0.3
-  rangeColor: {r: 1, g: 0, b: 0, a: 1}
   applePos1: applePos1
   applePos2: applePos2
   applePos3: applePos3

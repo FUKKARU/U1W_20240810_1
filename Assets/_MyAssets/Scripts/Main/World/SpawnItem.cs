@@ -172,59 +172,59 @@ namespace Main.Spawn
         IEnumerator CreateApple()
         {
             bool created = false;
-            if (appleCreatedNum >= appleTrees.Count * maxApplePerTree) goto END_APPLE;
-            while (!created)
+            if (appleCreatedNum < appleTrees.Count * maxApplePerTree)
             {
-                GameObject appleTree = appleTrees[Random.Range(0, appleTrees.Count)];
-
-                Apple.AppleTreeMov appleTreeComponent = appleTree.GetComponent<Apple.AppleTreeMov>();
-                if (appleTreeComponent.appleNum <= maxApplePerTree)
+                while (!created)
                 {
-                    int createPosIndex = Random.Range(1, maxApplePerTree + 1);
-                    string appleName;
+                    GameObject appleTree = appleTrees[Random.Range(0, appleTrees.Count)];
 
-                    switch (createPosIndex)
+                    Apple.AppleTreeMov appleTreeComponent = appleTree.GetComponent<Apple.AppleTreeMov>();
+                    if (appleTreeComponent.appleNum <= maxApplePerTree)
                     {
-                        case 1:
-                            appleName = spawnerSO.ApplePos1;
-                            if (!appleTreeComponent.apple1Created)
-                            {
-                                appleTreeComponent.apple1Created = true;
-                                created = true;
-                            }
-                            break;
-                        case 2:
-                            appleName = spawnerSO.ApplePos2;
-                            if (!appleTreeComponent.apple2Created)
-                            {
-                                appleTreeComponent.apple2Created = true;
-                                created = true;
-                            }
-                            break;
-                        case 3:
-                            appleName = spawnerSO.ApplePos3;
-                            if (!appleTreeComponent.apple3Created)
-                            {
-                                appleTreeComponent.apple3Created = true;
-                                created = true;
-                            }
-                            break;
-                        default:
-                            appleName = "error";
-                            break;
-                    }
-                    if (appleName == "error") throw new Exception("ƒŠƒ“ƒS‚Ìì¬Žž‚ÉƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½");
-                    if (created)
-                    {
-                        Vector3 eulerRot = new Vector3(0, Random.Range(0.0f, 360.0f), 0);
-                        Instantiate(appleInstance.objdata, appleTree.transform.Find(appleName)).transform.localEulerAngles = eulerRot;
-                        appleCreatedNum++;
-                        appleTreeComponent.appleNum++;
-                    }
+                        int createPosIndex = Random.Range(1, maxApplePerTree + 1);
+                        string appleName;
 
+                        switch (createPosIndex)
+                        {
+                            case 1:
+                                appleName = spawnerSO.ApplePos1;
+                                if (!appleTreeComponent.apple1Created)
+                                {
+                                    appleTreeComponent.apple1Created = true;
+                                    created = true;
+                                }
+                                break;
+                            case 2:
+                                appleName = spawnerSO.ApplePos2;
+                                if (!appleTreeComponent.apple2Created)
+                                {
+                                    appleTreeComponent.apple2Created = true;
+                                    created = true;
+                                }
+                                break;
+                            case 3:
+                                appleName = spawnerSO.ApplePos3;
+                                if (!appleTreeComponent.apple3Created)
+                                {
+                                    appleTreeComponent.apple3Created = true;
+                                    created = true;
+                                }
+                                break;
+                            default:
+                                throw new Exception("ƒŠƒ“ƒS‚Ìì¬Žž‚ÉƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½");
+                        }
+
+                        if (created)
+                        {
+                            Vector3 eulerRot = new(0, Random.Range(0.0f, 360.0f), 0);
+                            Instantiate(appleInstance.objdata, appleTree.transform.Find(appleName)).transform.localEulerAngles = eulerRot;
+                            appleCreatedNum++;
+                            appleTreeComponent.appleNum++;
+                        }
+                    }
                 }
             }
-        END_APPLE:
+
             yield return new WaitForSeconds(appleInstance.createOffsetTime);
             StartCoroutine(CreateApple());
         }
