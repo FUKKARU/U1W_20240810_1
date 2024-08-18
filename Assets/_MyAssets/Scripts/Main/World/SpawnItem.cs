@@ -18,40 +18,25 @@ namespace Main.Spawn
         SO_Tag tagSO;
         public static SpawnItem Instance { get; set; } = null;
 
-        LineRenderer lineRenderer;
-        SO_Spawner spawner;
-
-        public int kinokoCreatedNum { get; private set; } = 0;
+        public int KinokoCreatedNum { get; private set; } = 0;
         SpawnObj kinokoInstance;
 
-
-        List<GameObject> appleTrees = new List<GameObject>();
-        public int appleCreatedNum { get; private set; } = 0;
-        const byte maxApplePerTree = 3;
+        private readonly List<GameObject> appleTrees = new List<GameObject>();
+        public int AppleCreatedNum { get; private set; } = 0;
+        private static readonly byte maxApplePerTree = 3;
         SpawnObj appleInstance;
 
-
-        (float minX, float maxX, float minY, float maxY) minMaxRange;
         void Awake()
         {
-
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            if (Instance == null) Instance = this;
+            else Destroy(gameObject);
 
             spawnerSO = SO_Spawner.Entity;
             tagSO = SO_Tag.Entity;
             foreach (Transform child in appleParentTf)
             {
                 if (child.CompareTag(tagSO.TreeTag))
-                {
                     appleTrees.Add(child.gameObject);
-                }
             }
         }
         void Start()
@@ -69,19 +54,31 @@ namespace Main.Spawn
         //キノコ生成
         IEnumerator CreateKinoko()
         {
-            if (kinokoCreatedNum < spawnerSO.ＭaxKinokoNum)
+            while (true)
             {
-                kinokoCreatedNum++;
-                Vector3 checkPos = mushroomBorder.GetRandomPosition();
-                Quaternion rot = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);  //ランダムな回転を与える
-                if (Physics.Raycast(checkPos, Vector3.down, out RaycastHit hit) && hit.collider.CompareTag(tagSO.TerrainTag))
-                {
-                    Instantiate(kinokoInstance.objdata, hit.point, rot, instantiatedMushroomParent).transform.up = hit.normal;//地形に合わせた配置
-                }
+                CreateKinokoBhv();
+                yield return new WaitForSeconds(kinokoInstance.createOffsetTime);
             }
+        }
 
-            yield return new WaitForSeconds(kinokoInstance.createOffsetTime);
-            StartCoroutine(CreateKinoko());
+        private void CreateKinokoBhv()
+        {
+            // キノコの生成数が上限に達しているか？
+            if (KinokoCreatedNum >= spawnerSO.ＭaxKinokoNum) return;
+
+            // 「地面」が下に存在するか？
+            if (!Physics.Raycast(mushroomBorder.GetRandomPosition(), Vector3.down, out RaycastHit hit)) return;
+
+            // その「地面」は真にマップの地面であるか？
+            if (!hit.collider.CompareTag(tagSO.TerrainTag)) return;
+
+            // 地面に垂直になるように生成する
+            Quaternion rot = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
+            GameObject obj = Instantiate(kinokoInstance.objdata, hit.point, rot, instantiatedMushroomParent);
+            obj.transform.up = hit.normal;
+
+            // キノコの個数をインクリメント
+            KinokoCreatedNum++;
         }
 
 #if false
@@ -163,7 +160,7 @@ namespace Main.Spawn
         //プレイヤーがキノコを取得した際
         public void KinokoNumDec()
         {
-            kinokoCreatedNum--;
+            KinokoCreatedNum--;
         }
         #endregion
 
@@ -171,67 +168,52 @@ namespace Main.Spawn
         //リンゴ生成
         IEnumerator CreateApple()
         {
-            bool created = false;
-            if (appleCreatedNum < appleTrees.Count * maxApplePerTree)
+            while (true)
             {
-                while (!created)
-                {
-                    GameObject appleTree = appleTrees[Random.Range(0, appleTrees.Count)];
+                CreateAppleBhv();
+                yield return new WaitForSeconds(appleInstance.createOffsetTime);
+            }
+        }
 
-                    Apple.AppleTreeMov appleTreeComponent = appleTree.GetComponent<Apple.AppleTreeMov>();
-                    if (appleTreeComponent.appleNum <= maxApplePerTree)
-                    {
-                        int createPosIndex = Random.Range(1, maxApplePerTree + 1);
-                        string appleName;
+        private void CreateAppleBhv()
+        {
+            // リンゴの生成数が上限に達しているか？
+            if (AppleCreatedNum >= appleTrees.Count * maxApplePerTree) return;
 
-                        switch (createPosIndex)
-                        {
-                            case 1:
-                                appleName = spawnerSO.ApplePos1;
-                                if (!appleTreeComponent.apple1Created)
-                                {
-                                    appleTreeComponent.apple1Created = true;
-                                    created = true;
-                                }
-                                break;
-                            case 2:
-                                appleName = spawnerSO.ApplePos2;
-                                if (!appleTreeComponent.apple2Created)
-                                {
-                                    appleTreeComponent.apple2Created = true;
-                                    created = true;
-                                }
-                                break;
-                            case 3:
-                                appleName = spawnerSO.ApplePos3;
-                                if (!appleTreeComponent.apple3Created)
-                                {
-                                    appleTreeComponent.apple3Created = true;
-                                    created = true;
-                                }
-                                break;
-                            default:
-                                throw new Exception("リンゴの作成時にエラーが発生しました");
-                        }
+            // ランダムなリンゴの木を取得する(ただし、生成上限に達していないもの)
+            GameObject tree;
+            Apple.AppleTreeMov treeCp;
+            int cnt = 0;
+            while (true)
+            {
+                tree = appleTrees[Random.Range(0, appleTrees.Count)];
+                treeCp = tree.GetComponent<Apple.AppleTreeMov>();
 
-                        if (created)
-                        {
-                            Vector3 eulerRot = new(0, Random.Range(0.0f, 360.0f), 0);
-                            Instantiate(appleInstance.objdata, appleTree.transform.Find(appleName)).transform.localEulerAngles = eulerRot;
-                            appleCreatedNum++;
-                            appleTreeComponent.appleNum++;
-                        }
-                    }
-                }
+                if (treeCp.appleNum < maxApplePerTree) break;
+
+                if (++cnt > byte.MaxValue) throw new Exception("リンゴの木の取得に時間がかかりすぎています");
             }
 
-            yield return new WaitForSeconds(appleInstance.createOffsetTime);
-            StartCoroutine(CreateApple());
+            // その木のランダムな場所にリンゴを生成する
+            Func<Transform> func = Random.Range(1, maxApplePerTree + 1) switch
+            {
+                1 => (() => { treeCp.apple1Created = true; return tree.transform.Find(spawnerSO.ApplePos1); }),
+                2 => (() => { treeCp.apple2Created = true; return tree.transform.Find(spawnerSO.ApplePos2); }),
+                3 => (() => { treeCp.apple3Created = true; return tree.transform.Find(spawnerSO.ApplePos3); }),
+                _ => throw new Exception("リンゴの生成インデックスが有効ではありません")
+            };
+            GameObject obj = Instantiate(appleInstance.objdata, func());
+            obj.transform.localEulerAngles = new(0, Random.Range(0.0f, 360.0f), 0);
+
+            // リンゴの個数をインクリメント
+            AppleCreatedNum++;
+            treeCp.appleNum++;
         }
+
         //プレイヤーがリンゴを取得した際
         public void AppleNumDec(int num)
         {
-            appleCreatedNum -= num;
+            AppleCreatedNum -= num;
         }
         #endregion
     }
