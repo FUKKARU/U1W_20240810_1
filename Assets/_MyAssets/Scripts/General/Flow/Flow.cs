@@ -1,5 +1,3 @@
-using UnityEngine.SceneManagement;
-
 namespace General
 {
     public static class Flow
@@ -15,7 +13,7 @@ namespace General
             // ‘¦Žž‘JˆÚ
             else
             {
-                SceneManager.LoadScene(toSceneName);
+                UnityEngine.SceneManagement.SceneManager.LoadScene(toSceneName);
             }
         }
 
@@ -25,7 +23,7 @@ namespace General
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else
-            Application.Quit();
+            UnityEngine.Application.Quit();
 #endif
         }
     }
